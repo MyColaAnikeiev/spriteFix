@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lan="uk_UA">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+
+    <!-- Dialog box: base box sizes -->
+    <div class="sizes-dialog-back">
+        <div>
+            <div class="sizes-dg-title">
+                Base box size
+            </div>
+            <div class="sizes-dg-body">
+                <div class="left-col">
+                    <label>width </label>
+                    <br>
+                    <label>height</label>
+                </div>
+                <div class="right-col">
+                    <input class="input-width" type="number">
+                    <br>
+                    <input class="input-height" type="number">
+                    <br>
+                    <button>OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Drop Menu -->
+    <div id="drop-menu">
+        <ul>
+            <li id="open-button"><span>Open</span></li>
+            <li><span>Save</span></li>
+        </ul>
+    </div>
+
+
+    <div id="outer-container">    
+        <div id="main-container">
+            
+            <!--  Title -->
+            <div id="title-wrapper" class="decorative-border">
+                <div id="menu-and-title">
+                    <h3>SpriteFix v1.0</h3>
+                </div>
+            </div>
+
+            <!-- Main working area -->
+            <div class="middle-wrapper">
+
+                <div id="source-canvas-wrapper" class="decorative-border">
+                    <div id="source_view_container">
+                        <canvas width="300" height="300" id="source_viewer"></canvas>
+                    </div>
+                </div>
+
+                <div id="animation-preview-wrapper">
+                    <div>
+                        <canvas id="preview-canvas" width="160" height="160"></canvas>
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="frame-editor-block" class="hide">
+                <div>
+                    <div class="frames-adder">
+                        <div class="stage1 hide">
+                            <p>Press <span class="key">A</span> to</p>
+                            <p>add frames.</p>
+                        </div>
+                        <div class="stage2">
+                            Press a number to add <span class="key">1</span>-<span class="key">9</span>.
+                            <br>
+                            Then press <span class="key">Enter</span>
+                            Selected: <span class="key selected">1</span>
+                            <br>
+                            <input type="checkbox" checked> stick to axis.
+                        </div>
+                    </div>
+                    
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
+
+            <div id="anim-managment-block">
+                <div>
+                    <div id="anim-managment-panel">
+                        <button id="add-animation-btn">add</button>
+                    </div>
+                    <div id="anim-list-items">
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="scripts/RenderTools.js"></script>
+    <script src="scripts/SpriteAnimation.js"></script>
+    <script src="scripts/Project.js"></script>
+    <script src="scripts/script.js"></script>
+
+</body>
+
+
+</html>

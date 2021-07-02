@@ -1,9 +1,30 @@
 type EditorFlags = {
     editing: boolean,
     baseBoxEditing: boolean,
+    baseBoxResizeDraging: boolean,
     baseBoxDraging: boolean,
     framesMassPosotioning: boolean
 }
+
+type DomWalker = {
+    mainCanvas: HTMLCanvasElement;
+    addAnimationBtn: HTMLElement;  
+    animListContainer: HTMLElement;
+    baseBoxDialog: {
+        container: HTMLElement;
+        widthInput: HTMLInputElement;
+        heightInput: HTMLInputElement;
+        button: HTMLElement;
+    };
+    frameEditorBlock: {
+        container: HTMLElement;
+        frameAdder: {
+            container: HTMLElement;
+            stickToAxisCheckout: HTMLInputElement;
+            selectedNumber: HTMLElement;
+        }
+    }
+};
 
 /* New project is started when user opens Sprite */
 class Project{
@@ -13,29 +34,12 @@ class Project{
     flags: EditorFlags = {
         editing: false,
         baseBoxEditing: false,
+        baseBoxResizeDraging: false,
         baseBoxDraging: false,
         framesMassPosotioning: false
     }
 
-    html:{
-      mainCanvas: HTMLCanvasElement;
-      addAnimationBtn: HTMLElement;  
-      animListContainer: HTMLElement;
-      baseBoxDialog: {
-          container: HTMLElement;
-          widthInput: HTMLInputElement;
-          heightInput: HTMLInputElement;
-          button: HTMLElement;
-      };
-      frameEditorBlock: {
-          container: HTMLElement;
-          frameAdder: {
-              container: HTMLElement;
-              stickToAxisCheckout: HTMLInputElement;
-              selectedNumber: HTMLElement;
-          }
-      }
-    };
+    html: DomWalker;
 
     img: HTMLImageElement;
     spriteWidth: number;
@@ -49,9 +53,12 @@ class Project{
 
         RTools.setImg(img);
         RTools.drawImage();
+
         this.grubDomElements();
         this.resetDom();
         this.resetListeners();
+
+        EditingTools.setProject(this, this.html, this.flags);
     }
 
     grubDomElements(){
@@ -87,7 +94,7 @@ class Project{
                 return;
 
             setTimeout(() => {
-            let anim = new SpriteAnimation(this, this.html.animListContainer, this.flags);
+            let anim = new SpriteAnimation(this, this.flags);
             this.animations.push(anim);
             }, 1);
         }
@@ -95,11 +102,15 @@ class Project{
     }
 
     removeAnimation(an){
+        an.selfDestruct();
+
         this.animations = this.animations.filter((el, i, arr)=> {
-            if(el != an)
+            if(el != an){
                 return true;
-            else 
+            }
+            else{ 
                 return false;
+            }
         });
     }
 

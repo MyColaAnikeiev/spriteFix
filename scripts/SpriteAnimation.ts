@@ -4,7 +4,8 @@ type Frames = {
         left: number;
         width: number;
         height: number;
-    };
+    },
+
     frameDeltas: Array<{
         xShift: number;
         yShift: number;
@@ -26,13 +27,6 @@ type TempFrame = {
 };
 
 class SpriteAnimation{
-    
-    parent: Project;
-    container: HTMLElement;
-    listElement : HTMLElement;
-    flags: EditorFlags;
-
-    
 
     frames: Frames = {
         baseBox: {
@@ -44,224 +38,30 @@ class SpriteAnimation{
         frameDeltas: []
     }
 
-    constructor(parent: Project, container: HTMLElement, flags: EditorFlags){
-        this.container = container;
-        this.flags = flags;
-        this.parent = parent;
+    constructor(
+        public parent: Project, 
+        public flags: EditorFlags
+    ){        
 
-        this.addListElement();
+        EditingTools.setAnimation(this);
+
+        // Next Two stages should block any other actions.
+        parent.flags.editing = true;
+
+        // Animation name setting
+        new Promise((resolve) => {
+            EditingTools.addAnimationListElement(resolve)
+        })
+        // Geting base Box size and position
+        .then( () => {
+          return EditingTools.getBaseBoxSizesDialog(this.frames);
+        })
+        .then(
+            () => this.setAnimationEditingMode()
+        )
     }
 
-    addListElement(){
-        /* Click to element other than editing field will finish editing */ 
-        this.flags.editing = true;
-
-        /* HTML elements generation */
-        let el = document.createElement('div');
-        let input = document.createElement('input');
-        let nameField = document.createElement('div');
-        let closer = document.createElement('div');
-        
-        this.listElement = el;
-
-        el.className = 'anim-list-item';
-        input.type = 'txt';
-        input.placeholder = 'Animation name';
-        nameField.style.display = 'none';
-        nameField.className = 'anim-name'
-        closer.className = 'closer';
-        closer.innerHTML = "close";
-
-        el.appendChild(input);
-        el.appendChild(nameField);
-        el.appendChild(closer);
-        this.container.appendChild(el);
-
-        input.focus();
-
-
-        /* Click Handlers */
-
-        /* End name editing event */
-        document.body.onclick = (e) => {
-
-            if(e.target == input)
-                return;
-
-            nameField.innerHTML = input.value ? input.value : 'Animation';
-            input.style.display = 'none';
-            nameField.style.display = 'block';
-            
-            /* End name editing */
-            document.body.onclick = null;
-            //this.flags.editing = false;      
-
-            setTimeout(() => this.getBaseBoxSizesDialog(),4);
-        }
-
-
-        /* Removing animation event */
-        closer.onclick = () =>{
-            if(this.flags.editing)
-                return;
-            
-            this.container.removeChild(this.listElement);
-            this.parent.removeAnimation(this);
-        }
-
-    }
-
-    getBaseBoxSizesDialog(){
-        let html = this.parent.html;
-
-        this.flags.editing = true;
-        this.flags.baseBoxEditing = true;
-        html.baseBoxDialog.container.style.display = 'block';
-        html.baseBoxDialog.widthInput.focus();
-
-        RTools.drawFrameBoxes(this.frames);
-        RTools.showFrame(this.frames,0);
-
-
-        /* Handlers */
-        html.baseBoxDialog.widthInput.oninput = this.getBaseBoxResizeHandler('width');
-        html.baseBoxDialog.heightInput.oninput = this.getBaseBoxResizeHandler('height');
-
-        /* Draging */
-        html.mainCanvas.onmousedown = this.getDragingOnMouseDownHandler();
-
-        /* Finish */
-        let baseBoxSet = this.getBaseBoxIsSetHandler();
-        html.baseBoxDialog.button.onclick = baseBoxSet;
-        document.onkeydown = (e) =>{
-            if(e.key == 'Enter')
-                baseBoxSet();
-        }
-        
-    }
-
-    getBaseBoxResizeHandler(direction: string){
-        let html = this.parent.html;
-
-        /* Handlers */
-        function baseBoxResize(
-            spriteAnim: SpriteAnimation,
-            input: HTMLInputElement,
-            property: string): void
-        {
-            if(!spriteAnim.flags.baseBoxEditing)
-                return;
-
-            let value = input.valueAsNumber;
-
-            if(value < 8)
-                return;
-            if(value > 10000)
-                input.value = '10000';
-
-            spriteAnim.frames.baseBox[property] = value;
-
-            RTools.drawFrameBoxes(spriteAnim.frames);
-            RTools.showFrame(spriteAnim.frames,0);
-        }
-
-        if(direction === 'width'){
-            return  () => {
-                baseBoxResize(this, html.baseBoxDialog.widthInput,'width');
-            }
-        }
-
-        if(direction === 'height'){
-            return () => {
-            baseBoxResize(this, html.baseBoxDialog.heightInput,'height');
-            }
-        }
-
-        throw new Error("Expecting width or height.");
-    }
-
-    getDragingOnMouseDownHandler() : (e:Event) => void{
-        /* To keep it in memory */
-        let {spriteWidth} = this.parent;
-        let {spriteHeight} = this.parent;
-        let {html} = this.parent;
-
-        let func =  (e) => 
-        {
-            if(!this.flags.baseBoxEditing || this.flags.baseBoxDraging)
-                return;
-
-            /* Drag only base frame */
-            let canvRect = html.mainCanvas.getBoundingClientRect();
-            let frameRect = this.frames.baseBox;
-            if(
-                e.x - canvRect.left - 10 < frameRect.left  ||
-                e.y - canvRect.top - 10 < frameRect.top  ||
-                e.x - canvRect.left - 10 > frameRect.left + frameRect.width  ||
-                e.y - canvRect.top - 10 > frameRect.top + frameRect.height
-            )
-                return;
-
-            let lastX = e.clientX;
-            let lastY = e.clientY;
-
-            this.flags.baseBoxDraging = true;
-
-            document.onmousemove = (e) => {
-                let {baseBox} = this.frames
-                
-                baseBox.left += e.x - lastX;
-                baseBox.top += e.y - lastY;
-                lastX = e.x;
-                lastY = e.y
-
-                /* Once it out, you wont be able to grub it. */
-                if(baseBox.left < 0) baseBox.left = 0;
-                if(baseBox.top < 0) baseBox.top = 0;
-                if(baseBox.left + baseBox.width > spriteWidth + 5) 
-                    baseBox.left = spriteWidth - baseBox.width + 5;
-                if(baseBox.top + baseBox.height > spriteHeight + 5) 
-                    baseBox.top = spriteHeight - baseBox.height + 5;
-
-                RTools.drawFrameBoxes(this.frames);
-                RTools.showFrame(this.frames,0);
-            }
-
-            document.onmouseup = () => { 
-                document.onmousemove = null;
-                document.onmouseup = null;
-                this.flags.baseBoxDraging = false;
-            }
-        }
-
-        return func;
-    }
-
-    getBaseBoxIsSetHandler(){
-        let html = this.parent.html;
-
-        let baseBoxSet = () => {
-            if(this.flags.baseBoxDraging)
-                return;
-
-            html.mainCanvas.onmousedown = null;
-            html.baseBoxDialog.widthInput.oninput = null;
-            html.baseBoxDialog.heightInput.oninput = null;
-            html.baseBoxDialog.button.onclick = null;
-            document.onkeydown = null;
-            
-            this.flags.baseBoxEditing = false;
-            this.flags.editing = false;
-            
-            html.baseBoxDialog.container.style.display = 'none';
-
-
-            setTimeout(() => this.setAnimationEditingMode(),4);
-        }
-
-        return baseBoxSet;
-    }
-
+  
     
     /* CHANGE THIS STUPID NAME */
     /*
@@ -355,6 +155,7 @@ class SpriteAnimation{
         RTools.drawFrameBoxes(this.frames);
     }
 
+
     /* 
      * 1) Add frames
      * 2) Add or remove animations
@@ -407,6 +208,11 @@ class SpriteAnimation{
 
         }
 
+
+    }
+
+    /* Clean up when animation deleted */
+    selfDestruct(){
 
     }
 }

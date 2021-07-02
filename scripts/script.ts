@@ -25,6 +25,10 @@ RTools.drawMarkup(canvas_width,canvas_height);
 function clickOpen() : void{
     let fileInput: HTMLInputElement;
 
+    /* Block while editing */
+    if(curProject && curProject.flags.editing)
+        return;
+
     function readFile(e){
         let file = e.target.files[0];
         if(!file)

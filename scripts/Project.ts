@@ -3,10 +3,12 @@ type EditorFlags = {
     baseBoxEditing: boolean,
     baseBoxResizeDraging: boolean,
     baseBoxDraging: boolean,
-    framesMassPosotioning: boolean
+    framesMassPosotioning: boolean,
+    frameEditingMode: boolean
 }
 
 type DomWalker = {
+    mainCanvasComtainer: HTMLElement;
     mainCanvas: HTMLCanvasElement;
     addAnimationBtn: HTMLElement;  
     animListContainer: HTMLElement;
@@ -28,7 +30,9 @@ type DomWalker = {
 
 /* New project is started when user opens Sprite */
 class Project{
-    animations: Array<SpriteAnimation> = [];
+
+    animations: Map<SpriteAnimation, HTMLElement> = new Map();
+    selectedAnimation: SpriteAnimation | null = null;
 
     /* Editing state machine flags */
     flags: EditorFlags = {
@@ -36,7 +40,8 @@ class Project{
         baseBoxEditing: false,
         baseBoxResizeDraging: false,
         baseBoxDraging: false,
-        framesMassPosotioning: false
+        framesMassPosotioning: false,
+        frameEditingMode: false
     }
 
     html: DomWalker;
@@ -56,13 +61,14 @@ class Project{
 
         this.grubDomElements();
         this.resetDom();
-        this.resetListeners();
+        this.setListeners();
 
         EditingTools.setProject(this, this.html, this.flags);
     }
 
     grubDomElements(){
         this.html = {
+            mainCanvasComtainer: document.getElementById("source_view_container"),
             mainCanvas: <HTMLCanvasElement>document.getElementById('source_viewer'),
             addAnimationBtn : document.getElementById('add-animation-btn'),
             animListContainer: document.getElementById('anim-list-items'),
@@ -87,31 +93,37 @@ class Project{
         this.html.animListContainer.innerHTML = '';
     }
 
-    resetListeners(){
+    setListeners(){
 
         this.html.addAnimationBtn.onclick = () => {
             if(this.flags.editing)
                 return;
 
             setTimeout(() => {
-            let anim = new SpriteAnimation(this, this.flags);
-            this.animations.push(anim);
-            }, 1);
+                let anim = new SpriteAnimation(this, this.flags);
+                //this.animations.push(anim);
+                this.selectedAnimation = anim;
+            }, 4);
         }
+
+        
 
     }
 
-    removeAnimation(an){
-        an.selfDestruct();
+    registerAnimation(listItem: HTMLElement, anim: SpriteAnimation){
+        this.animations.set(anim, listItem);
+    }
 
-        this.animations = this.animations.filter((el, i, arr)=> {
-            if(el != an){
-                return true;
-            }
-            else{ 
-                return false;
-            }
-        });
+    removeAnimation(anim){
+        anim.selfDestruct();
+        this.animations.delete(anim);
+        
+        for (let key of this.animations.keys()){
+            key.selectAsCurrent();
+            break;
+        }
+
+        console.log(this.animations);
     }
 
 }

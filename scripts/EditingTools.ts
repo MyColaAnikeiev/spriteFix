@@ -18,10 +18,13 @@ export function setAnimation(spriteAnimation: SpriteAnimation){
 }
 
 
-
-/********************************
- *  Name Editing Stage 
+/*
+ * Note: All stages below should be independent of each other 
  */
+
+/*******************************************************************************
+ *   Name Editing stage. 
+ *******************************************************************************/
 
 export function addAnimationListElement(nextStage: Function){
     /* Click to element other than editing field will finish editing */ 
@@ -31,7 +34,6 @@ export function addAnimationListElement(nextStage: Function){
     let input = document.createElement('input');
     let nameField = document.createElement('div');
     let closer = document.createElement('div');
-
 
     el.className = 'anim-list-item';
     input.type = 'txt';
@@ -47,6 +49,8 @@ export function addAnimationListElement(nextStage: Function){
     html.animListContainer.appendChild(el);
 
     input.focus();
+
+    curAnimation.registerListItem(el);
 
 
     /* Click Handlers */
@@ -70,21 +74,35 @@ export function addAnimationListElement(nextStage: Function){
     }
 
 
+    //  Enclosure
+    const currentAnimation = curAnimation;
+
+    /* Selection animation event */
+    el.onclick = (e: any) =>{
+        if(flags.editing)
+            return;
+        // Don't listen to close button dude
+        if(e.target == closer)
+            return;
+
+        currentAnimation.selectAsCurrent();
+    }
+
     /* Removing animation event */
     closer.onclick = () =>{
         if(flags.editing)
             return;
         
         html.animListContainer.removeChild(el);
-        curProject.removeAnimation(curAnimation);
+        curProject.removeAnimation(currentAnimation);
     }
 
 }
 
 
-/********************************************
- *   Base box set up Stage
- */
+/********************************************************************************
+ *    Base box set up stage
+ ********************************************************************************/
 
 export function getBaseBoxSizesDialog(frames: Frames): Promise<void>{
     
@@ -277,7 +295,7 @@ function getDragingOnMouseDownHandler(frames: Frames){
 
             html.baseBoxDialog.widthInput.value = "" + box.width;
             html.baseBoxDialog.heightInput.value = "" + box.height;
-            
+
             RTools.drawFrameBoxes(frames);
             RTools.showFrame(frames,0);
         }
@@ -318,5 +336,9 @@ function getBaseBoxIsSetHandler(nextStage: Function, dragingIdicator){
     return baseBoxSet;
 }
 
+
+/********************************************************************************
+ * 
+ */
 
 }

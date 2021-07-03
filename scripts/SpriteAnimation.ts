@@ -48,6 +48,9 @@ class SpriteAnimation{
         // Next Two stages should block any other actions.
         parent.flags.editing = true;
 
+        // ajust base box position to scroll 
+        this.frames.baseBox.top = this.parent.html.mainCanvasComtainer.scrollTop;
+
         // Animation name setting
         new Promise((resolve) => {
             EditingTools.addAnimationListElement(resolve)
@@ -57,7 +60,7 @@ class SpriteAnimation{
           return EditingTools.getBaseBoxSizesDialog(this.frames);
         })
         .then(
-            () => this.setAnimationEditingMode()
+            () => this.frameEditingMode()
         )
     }
 
@@ -65,10 +68,13 @@ class SpriteAnimation{
     
     /* CHANGE THIS STUPID NAME */
     /*
-     * All parameters except 'update' will only temporaly change 
-     * last frames parameters and show it to canvas. To finaly add 
-     * specified frames last argument should be true.
-     * argument 'stickToAxis' is accepted only when !temp == true
+     *  On first call or after call width 'update = true' parameters
+     *  'frameNum' and 'stickToAxis' should be specified. After that
+     *  'stickToAxis' will keep it's value and 'frameNum' could be
+     *  set as -1 which means: no changes.
+     *  For parameters 'xPos' and 'yPos', just call it with current
+     *  event.clientX and event.clientY or set xPos and yPos to -1 
+     *  when there is no mouse changes. 
      */
     addedFramesPreview(
         frameNum: number,
@@ -103,7 +109,6 @@ class SpriteAnimation{
 
         // If not mouse event xPos = -1
         if(xPos != -1 && temp.lastX != -1){
-            // Half of mouse movement
             temp.shiftX += (xPos - temp.lastX);
             temp.shiftY += (yPos - temp.lastY);     
             temp.lastX = xPos;
@@ -161,8 +166,15 @@ class SpriteAnimation{
      * 2) Add or remove animations
      * 3) Setup animation preview
      */
-    setAnimationEditingMode() : void{
-        let html = this.parent.html;
+    frameEditingMode(){ 
+        this.flags.editing = false;
+        this.flags.frameEditingMode = true;
+        
+        this.frameEditingMode_();
+    }  
+
+    frameEditingMode_() : void{
+        const html = this.parent.html;
 
         html.frameEditorBlock.container.classList.remove('hide');
 
@@ -209,6 +221,18 @@ class SpriteAnimation{
         }
 
 
+    }
+
+
+    registerListItem(listItem: HTMLElement){
+        this.parent.registerAnimation(listItem, this);
+    }
+
+    selectAsCurrent(){
+        EditingTools.setAnimation(this);
+        RTools.drawFrameBoxes(this.frames);
+
+        this.frameEditingMode();
     }
 
     /* Clean up when animation deleted */

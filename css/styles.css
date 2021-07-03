@@ -335,6 +335,8 @@ span.key{
     margin: 3px;
     padding: 1px 9px;
     background-color: white;
+
+    cursor: pointer;
 }
 .anim-list-item > input{
     border-color: rgba(255, 255, 255, 0.096);

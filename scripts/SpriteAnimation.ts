@@ -56,6 +56,7 @@ class SpriteAnimation{
         parent.flags.editing = true;
 
         EditingTools.setAnimation(this);
+        AnimationPlayer.setAnimation(this);
         this.getHendlers();
 
         // Adjust base box start position to scrollPosition so it
@@ -95,19 +96,26 @@ class SpriteAnimation{
      *       1) Add frames
      */
     frameEditingMode(){ 
-        const html = this.parent.html;
+        this.showFrameEditorBlock();
         this.flags.editing = false;
-        html.frameEditorBlock.container.classList.remove('hide');
+        this.flags.frameEditingMode = true;
+
+        AnimationPlayer.start();
 
         document.body.addEventListener("keydown",this.handlers.addFrame);
     }  
 
+    showFrameEditorBlock(){
+        const html = this.parent.html;
+        html.frameEditorBlock.container.classList.remove('hide');
+    }
 
     registerAnimation(listItem: HTMLElement){
         this.parent.registerAnimation(listItem, this);
     }
 
     selectAsCurrent(){
+        AnimationPlayer.setAnimation(this);
         EditingTools.setAnimation(this);
         RTools.drawFrameBoxes(this.frames);
 
@@ -116,6 +124,7 @@ class SpriteAnimation{
 
     /* Clean up when animation deleted */
     selfDestruct(){
+        this.flags.frameEditingMode = false;
         document.body.removeEventListener("keydown", this.handlers.addFrame);
     }
 
@@ -123,8 +132,6 @@ class SpriteAnimation{
 
     /* 
      * Used in: 'EditingTools.getFrameAdderHandler'     
-     *  This by no means well designed function, at least
-     *  make life easier at event handler code parts.
      *
      *  On first call or after call width 'update = true' parameters
      *  'frameNum' and 'stickToAxis' should be specified. After that

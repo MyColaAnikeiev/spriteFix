@@ -21,6 +21,8 @@ type DomWalker = {
     frameEditorBlock: {
         container: HTMLElement;
         frameAdder: {
+            stage1: HTMLElement;
+            stage2: HTMLElement;
             container: HTMLElement;
             stickToAxisCheckout: HTMLInputElement;
             selectedNumber: HTMLElement;
@@ -63,7 +65,8 @@ class Project{
         this.resetDom();
         this.setListeners();
 
-        EditingTools.setProject(this, this.html, this.flags);
+        EditingTools.setProject(this);
+        AnimationPlayer.setProject(this);
     }
 
     grubDomElements(){
@@ -81,6 +84,8 @@ class Project{
             frameEditorBlock: {
                 container: document.getElementById('frame-editor-block'),
                 frameAdder: {
+                    stage1: document.querySelector("#frame-editor-block .stage1"),
+                    stage2: document.querySelector("#frame-editor-block .stage2"),
                     container : document.querySelector('#frame-editor-block .frames-adder'),
                     stickToAxisCheckout: <HTMLInputElement>document.querySelector('#frame-editor-block .frames-adder input'),
                     selectedNumber: document.querySelector('#frame-editor-block .frames-adder span.selected')

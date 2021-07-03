@@ -70,16 +70,18 @@
             <div id="frame-editor-block" class="hide">
                 <div>
                     <div class="frames-adder">
-                        <div class="stage1 hide">
+                        <div class="stage1">
                             <p>Press <span class="key">A</span> to</p>
                             <p>add frames.</p>
                         </div>
-                        <div class="stage2">
+                        <div class="stage2 hide">
                             Press a number to add <span class="key">1</span>-<span class="key">9</span>.
                             <br>
-                            Then press <span class="key">Enter</span>
+                            Then press <span class="key">RightMouse</span>
                             Selected: <span class="key selected">1</span>
-                            <br>
+                            <!--<input type="checkbox" checked> stick to axis.-->
+                        </div>
+                        <div class="checkbox">
                             <input type="checkbox" checked> stick to axis.
                         </div>
                     </div>
@@ -105,6 +107,7 @@
 
     <script src="scripts/RenderTools.js"></script>
     <script src="scripts/EditingTools.js"></script>
+    <script src="scripts/AnimationPlayer.js"></script>
     <script src="scripts/SpriteAnimation.js"></script>
     <script src="scripts/Project.js"></script>
     <script src="scripts/script.js"></script>

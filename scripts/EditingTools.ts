@@ -7,10 +7,10 @@ let flags: EditorFlags;
 let curAnimation: SpriteAnimation | null = null;
 
 /* Call this two before any other functons. */
-export function setProject(project: Project, domWalker: DomWalker, editFlags: EditorFlags){
+export function setProject(project: Project){
     curProject = project;
-    html = domWalker;
-    flags = editFlags;
+    html = project.html;
+    flags = project.flags;
 }
 
 export function setAnimation(spriteAnimation: SpriteAnimation){
@@ -340,6 +340,15 @@ function getBaseBoxIsSetHandler(nextStage: Function, dragingIdicator){
 /********************************************************************************
  * 
  */
+function frameEditorBlockSetStage(num: number){
+    if(num == 1){
+        html.frameEditorBlock.frameAdder.stage1.classList.remove("hide");
+        html.frameEditorBlock.frameAdder.stage2.classList.add("hide");
+    }else{
+        html.frameEditorBlock.frameAdder.stage1.classList.add("hide");
+        html.frameEditorBlock.frameAdder.stage2.classList.remove("hide");
+    }
+}
 
 export function getFrameAdderHandler(){
     
@@ -353,10 +362,11 @@ export function getFrameAdderHandler(){
             flags.editing = true;
             flags.framesMassPosotioning = true;
 
+            // Bottom panel 
+            frameEditorBlockSetStage(2);
+
             let stickToAxis = html.frameEditorBlock.frameAdder.stickToAxisCheckout.checked;
             curAnimation.stateBasedFrameAdder(1,-1,-1,stickToAxis);
-
-            //document.body.onkeydown = null;
 
             document.body.onmousemove = (e: MouseEvent) => {
                 curAnimation.stateBasedFrameAdder(-1,e.clientX,e.clientY,true);
@@ -367,6 +377,7 @@ export function getFrameAdderHandler(){
                 curAnimation.stateBasedFrameAdder(-1,-1,-1,true,true);
                 document.body.onmousemove = null;
                 document.body.onmousedown = null;
+                frameEditorBlockSetStage(1);
                 flags.framesMassPosotioning = false;
                 flags.editing = false;
             }

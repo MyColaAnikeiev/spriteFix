@@ -121,21 +121,28 @@ namespace RTools{
         let pHeight = preview_canvas.height;
         let pRatio = pWidth / pHeight;
 
-        let fWidth = frames.baseBox.width;
+        let {crop} = frames.frameDeltas[ind];
+        let fWidth = frames.baseBox.width
         let fHeight = frames.baseBox.height;
+        // Apply crop
+        fWidth  -= crop.left + crop.right;
+        fHeight -= crop.top  + crop.bottom;
         let fRatio = fWidth / fHeight;
 
         /* Fill background */
         preview_ctx.fillStyle = background_color;
         preview_ctx.fillRect(0,0,pWidth,pHeight);
 
+        let position = getFrameAbsolutePosition(frames, ind);
         let bb = frames.baseBox;
         if(pRatio > fRatio){
             let wRatio = fRatio / pRatio;
             let gap = (1 - wRatio) / 2 * pWidth;
 
             preview_ctx.drawImage(spriteImg,
-                bb.left, bb.top, bb.width, bb.height,
+                position.left + crop.right,
+                position.top  + crop.top,
+                fWidth, fHeight,
                 gap, 0, pWidth*wRatio, pHeight
                 );
         }
@@ -144,11 +151,25 @@ namespace RTools{
             let gap = (1 - hRatio) / 2 * pHeight;
 
             preview_ctx.drawImage(spriteImg,
-                bb.left, bb.top, bb.width, bb.height,
+                position.left + crop.right, 
+                position.top  + crop.top, 
+                fWidth, fHeight,
                 0, gap, pWidth, pHeight* hRatio
                 );
         }
         
+    }
+    
+    function getFrameAbsolutePosition(frames: Frames, ind: number){
+        let x = frames.baseBox.left;
+        let y = frames.baseBox.top;
+
+        for(let i = 0; i <= ind; i++){
+            x += frames.frameDeltas[i].xShift;
+            y += frames.frameDeltas[i].yShift;
+        }
+
+        return { left: x, top: y }
     }
 
 }

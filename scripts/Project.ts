@@ -101,7 +101,6 @@ class Project{
 
             setTimeout(() => {
                 let anim = new SpriteAnimation(this, this.flags);
-                //this.animations.push(anim);
                 this.selectedAnimation = anim;
             }, 4);
         }
@@ -120,10 +119,10 @@ class Project{
         
         for (let key of this.animations.keys()){
             key.selectAsCurrent();
-            break;
+            return;
         }
 
-        console.log(this.animations);
+        RTools.drawImage();
     }
 
 }

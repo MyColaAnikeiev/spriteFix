@@ -19,11 +19,16 @@ type Frames = {
     }> 
 };
 
-// see method: addedFramesPreview()
+// see method: stateBasedFrameAdder()
 type TempFrame = {
     frames: number, lastX: number, lastY: number,
     shiftX: number, shiftY: number,
     stickToAxis: boolean
+};
+
+type HandlerFunction = (evt: KeyboardEvent) => void;
+type FrameEditingModeHandlers = {
+    addFrame : HandlerFunction
 };
 
 class SpriteAnimation{
@@ -35,27 +40,34 @@ class SpriteAnimation{
             width: 32,
             height: 32
         },
-        frameDeltas: []
+        frameDeltas: [{
+            xShift: 0, yShift: 0,
+            crop: {top: 0, right: 0, bottom: 0, left: 0}
+        }]
     }
+
+    handlers: FrameEditingModeHandlers;
 
     constructor(
         public parent: Project, 
         public flags: EditorFlags
     ){        
-
-        EditingTools.setAnimation(this);
-
         // Next Two stages should block any other actions.
         parent.flags.editing = true;
 
-        // ajust base box position to scroll 
-        this.frames.baseBox.top = this.parent.html.mainCanvasComtainer.scrollTop;
+        EditingTools.setAnimation(this);
+        this.getHendlers();
 
-        // Animation name setting
+        // Adjust base box start position to scrollPosition so it
+        // will apear where you would expect it. 
+        this.frames.baseBox.top  = this.parent.html.mainCanvasComtainer.scrollTop;
+        this.frames.baseBox.left = this.parent.html.mainCanvasComtainer.scrollLeft;
+
+        // Animation name setting stage
         new Promise((resolve) => {
             EditingTools.addAnimationListElement(resolve)
         })
-        // Geting base Box size and position
+        // Geting base Box size and position stage
         .then( () => {
           return EditingTools.getBaseBoxSizesDialog(this.frames);
         })
@@ -64,19 +76,65 @@ class SpriteAnimation{
         )
     }
 
-  
-    
-    /* CHANGE THIS STUPID NAME */
-    /*
+    /* Call after 'EditingTools.setAnimation()' */
+    getHendlers(){
+        this.handlers = {
+            addFrame: EditingTools.getFrameAdderHandler()
+        }
+    }
+
+    /*****************************
+     *  Posible actions at this stage:
+     *     Global:
+     *       1) Open sprite (Current project will hopefully be destroyed by gurbage collector)
+     *     Project:
+     *       1) Add Animation
+     *       2) Select Animation
+     *       3) Remove Animation
+     *     Animation:
+     *       1) Add frames
+     */
+    frameEditingMode(){ 
+        const html = this.parent.html;
+        this.flags.editing = false;
+        html.frameEditorBlock.container.classList.remove('hide');
+
+        document.body.addEventListener("keydown",this.handlers.addFrame);
+    }  
+
+
+    registerAnimation(listItem: HTMLElement){
+        this.parent.registerAnimation(listItem, this);
+    }
+
+    selectAsCurrent(){
+        EditingTools.setAnimation(this);
+        RTools.drawFrameBoxes(this.frames);
+
+        this.frameEditingMode();
+    }
+
+    /* Clean up when animation deleted */
+    selfDestruct(){
+        document.body.removeEventListener("keydown", this.handlers.addFrame);
+    }
+
+
+
+    /* 
+     * Used in: 'EditingTools.getFrameAdderHandler'     
+     *  This by no means well designed function, at least
+     *  make life easier at event handler code parts.
+     *
      *  On first call or after call width 'update = true' parameters
      *  'frameNum' and 'stickToAxis' should be specified. After that
      *  'stickToAxis' will keep it's value and 'frameNum' could be
      *  set as -1 which means: no changes.
      *  For parameters 'xPos' and 'yPos', just call it with current
-     *  event.clientX and event.clientY or set xPos and yPos to -1 
+     *  event.clientX and event.clientY or set 'xPos' and 'yPos' to -1 
      *  when there is no mouse changes. 
      */
-    addedFramesPreview(
+    stateBasedFrameAdder(
         frameNum: number,
         xPos:number, 
         yPos:number, 
@@ -85,8 +143,10 @@ class SpriteAnimation{
         ): void
     {
  
-        let fd = this.frames.frameDeltas;
-        let temp: TempFrame = (<any>this.addedFramesPreview).temp;
+        const fd = this.frames.frameDeltas;
+
+        // Get static 'temp' object if exist or 'undefined' otherwise.
+        let temp: TempFrame = (<any>this.stateBasedFrameAdder).temp;
 
         if(!temp && frameNum < 0)
             return;
@@ -104,7 +164,7 @@ class SpriteAnimation{
                 stickToAxis: stickToAxis
             };
             // Set static varaible
-            (<any>this.addedFramesPreview).temp = temp;
+            (<any>this.stateBasedFrameAdder).temp = temp;
         }
 
         // If not mouse event xPos = -1
@@ -121,11 +181,10 @@ class SpriteAnimation{
         }
 
 
-        /* If stick to axis checkpoint: choose bigger shift */
-        let xShift = !temp.stickToAxis || 
-            (Math.abs(temp.shiftX) >= Math.abs(temp.shiftY)) ? temp.shiftX : 0;
-        let yShift = !temp.stickToAxis || 
-            (Math.abs(temp.shiftX) <  Math.abs(temp.shiftY)) ? temp.shiftY : 0;
+        /* If 'stick to axis' checkpoint: choose bigger direction shift */
+        let verticalIsDominant = (Math.abs(temp.shiftX) >= Math.abs(temp.shiftY));
+        let xShift = !temp.stickToAxis ||  verticalIsDominant ? temp.shiftX : 0;
+        let yShift = !temp.stickToAxis || !verticalIsDominant ? temp.shiftY : 0;
 
         // Add or remove frames from array if any changes
         if(frameNum < temp.frames){
@@ -154,89 +213,10 @@ class SpriteAnimation{
         temp.frames = frameNum;
 
         if(update){
-            (<any>this.addedFramesPreview).temp = null;
+            (<any>this.stateBasedFrameAdder).temp = null;
         }
 
         RTools.drawFrameBoxes(this.frames);
     }
 
-
-    /* 
-     * 1) Add frames
-     * 2) Add or remove animations
-     * 3) Setup animation preview
-     */
-    frameEditingMode(){ 
-        this.flags.editing = false;
-        this.flags.frameEditingMode = true;
-        
-        this.frameEditingMode_();
-    }  
-
-    frameEditingMode_() : void{
-        const html = this.parent.html;
-
-        html.frameEditorBlock.container.classList.remove('hide');
-
-        document.body.onkeydown = (e: KeyboardEvent) => {
-            if(e.key == 'a'){
-
-                if(this.flags.editing)
-                    return;
-
-                this.flags.editing = true;
-                this.flags.framesMassPosotioning = true;
-
-                let stickToAxis = html.frameEditorBlock.frameAdder.stickToAxisCheckout.checked;
-                this.addedFramesPreview(1,-1,-1,stickToAxis);
-
-                //document.body.onkeydown = null;
-
-                document.body.onmousemove = (e: MouseEvent) => {
-                    this.addedFramesPreview(-1,e.clientX,e.clientY,true);
-                }
-
-                document.body.onmousedown = () => {
-                    this.addedFramesPreview(-1,-1,-1,true,true);
-                    document.body.onmousemove = null;
-                    this.flags.editing = false;
-                    this.flags.framesMassPosotioning = false;
-                }
-            }
-
-            if(this.flags.framesMassPosotioning){
-
-                let num = parseInt(e.key);
-                if(num != NaN && num > -1)
-                    this.addedFramesPreview(num,-1,-1);
-
-                if(e.key == "Escape" ){
-                    this.addedFramesPreview(0,-1,-1,true,true);
-                    document.body.onmousemove = null;
-                    this.flags.editing = false;
-                    this.flags.framesMassPosotioning = false;
-                }
-            }
-
-        }
-
-
-    }
-
-
-    registerListItem(listItem: HTMLElement){
-        this.parent.registerAnimation(listItem, this);
-    }
-
-    selectAsCurrent(){
-        EditingTools.setAnimation(this);
-        RTools.drawFrameBoxes(this.frames);
-
-        this.frameEditingMode();
-    }
-
-    /* Clean up when animation deleted */
-    selfDestruct(){
-
-    }
 }

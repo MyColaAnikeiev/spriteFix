@@ -50,7 +50,7 @@ export function addAnimationListElement(nextStage: Function){
 
     input.focus();
 
-    curAnimation.registerListItem(el);
+    curAnimation.registerAnimation(el);
 
 
     /* Click Handlers */
@@ -340,5 +340,56 @@ function getBaseBoxIsSetHandler(nextStage: Function, dragingIdicator){
 /********************************************************************************
  * 
  */
+
+export function getFrameAdderHandler(){
+    
+    return function(e: KeyboardEvent): any{
+        
+        if(e.key == 'a'){
+
+            if(flags.editing)
+                return;
+
+            flags.editing = true;
+            flags.framesMassPosotioning = true;
+
+            let stickToAxis = html.frameEditorBlock.frameAdder.stickToAxisCheckout.checked;
+            curAnimation.stateBasedFrameAdder(1,-1,-1,stickToAxis);
+
+            //document.body.onkeydown = null;
+
+            document.body.onmousemove = (e: MouseEvent) => {
+                curAnimation.stateBasedFrameAdder(-1,e.clientX,e.clientY,true);
+            }
+
+            // Finish and clean
+            document.body.onmousedown = () => {
+                curAnimation.stateBasedFrameAdder(-1,-1,-1,true,true);
+                document.body.onmousemove = null;
+                document.body.onmousedown = null;
+                flags.framesMassPosotioning = false;
+                flags.editing = false;
+            }
+        }
+
+        if(flags.framesMassPosotioning){
+
+            let num = parseInt(e.key);
+            if(num != NaN && num > -1)
+                curAnimation.stateBasedFrameAdder(num,-1,-1);
+
+            if(e.key == "Escape" ){
+                curAnimation.stateBasedFrameAdder(0,-1,-1,true,true);
+                document.body.onmousemove = null;
+                flags.editing = false;
+                flags.framesMassPosotioning = false;
+            }
+        }
+
+    }
+
+
+}
+
 
 }

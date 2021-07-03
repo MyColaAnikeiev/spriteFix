@@ -254,6 +254,7 @@ span.key{
     flex-basis: 1120px;
     flex-shrink: 1.0;
     background-image: linear-gradient(rgb(120, 119, 119),rgba(6, 67, 121, 0.15));
+    border-radius: 3px;
 }
 #frame-editor-block > div {
     display: flex;

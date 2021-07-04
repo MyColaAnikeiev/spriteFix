@@ -125,6 +125,8 @@ span.key{
     color: white;
     background-color:#444444;
     scale: 1.0 0.0;
+    transform: scale(1.0,0.0);
+    -webkit-transform: scale(1.0,0.0);
 
     transition-property: scale;
     transition-delay: 100ms;
@@ -148,6 +150,8 @@ span.key{
 }
 #drop-menu:hover > ul{
     scale: 1.0;
+    transform: scale(1.0,1.0);
+    -webkit-transform: scale(1.0,1.0);
 }
 
 
@@ -226,7 +230,7 @@ span.key{
     
 }
 
-#animation-preview-wrapper{
+#animation-preview-column{
     flex-basis: 180px;
     background-color: #201f1f;
     flex-grow: 0;
@@ -238,13 +242,27 @@ span.key{
 
     margin-left: -180px;
 }
-#animation-preview-wrapper > div{
+#animation-preview-column div.canvas-container{
     max-width: 160px;
     margin: 0 auto;
     background-color: #111111;
     padding: 8px 0;
 }
+#animation-preview-column div.preview-controls{
+    max-width: 160px;
+    margin: 0 auto;
+    padding: 7px 0 0 0 ;
 
+    color: #dedddd;
+}
+#animation-preview-column div.preview-controls .num-input span{
+}
+#animation-preview-column div.preview-controls input[type=number]{
+    box-sizing: border-box;
+    width: 100%;
+    background-color: #9a9a9a;
+    color: #2e2804;
+} 
 
 
 /* Frame editor row */

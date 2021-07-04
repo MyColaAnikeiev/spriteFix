@@ -34,7 +34,8 @@ type DomWalker = {
         showLast2: HTMLElement;
         showLast3: HTMLElement;
         showAll: HTMLElement;
-    }   
+    },
+    scaleControlInput: HTMLInputElement;
 };
 
 /* New project is started when user opens Sprite */
@@ -107,7 +108,8 @@ class Project{
                 showLast2 : query("#animation-preview-column button.show-last2"),
                 showLast3 : query("#animation-preview-column button.show-last3"),
                 showAll : query("#animation-preview-column button.show-all")
-            }
+            },
+            scaleControlInput: query("#animation-preview-column .scale-control input")
         };
     }
 
@@ -147,5 +149,4 @@ class Project{
         AnimationPlayer.stop();
         RTools.drawImage();
     }
-
 }

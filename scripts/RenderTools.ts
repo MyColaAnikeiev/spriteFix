@@ -69,6 +69,11 @@ namespace RTools{
 
 
     function drawFrameBox(x,y,width,height): void{
+        x = Math.round(x);
+        y = Math.round(y);
+        width = Math.round(width);
+        height = Math.round(height);
+
         ctx.strokeStyle = "#a0ffa0";
         ctx.lineWidth = 2;
 

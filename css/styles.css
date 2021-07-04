@@ -221,13 +221,17 @@ span.key{
 #source-canvas-wrapper > div{
     overflow: scroll;
     max-width: 915px;
-    max-height: 430px;
+    height: 430px;
     background-image: none;
     background-color: #aaa;
 }
 #source_viewer{
     display:block;
-    
+    transform-origin: left top;
+    -webkit-transform-origin-x: left;
+    -webkit-transform-origin-y: top;
+    transform: scale(1.0);
+    -webkit-transform: scale(1.0);
 }
 
 #animation-preview-column{
@@ -241,6 +245,17 @@ span.key{
     border-bottom-right-radius: 8px;
 
     margin-left: -180px;
+}
+#animation-preview-column .scale-control{
+    max-width: 150px;
+    margin: 0 auto;
+
+    color: #dbdbdb;
+}
+#animation-preview-column .scale-control input{
+    max-width: 60px;
+    background-color: #585858;
+    color:#c4d6ce;
 }
 #animation-preview-column div.canvas-container{
     max-width: 160px;

@@ -61,8 +61,9 @@ class SpriteAnimation{
 
         // Adjust base box start position to scrollPosition so it
         // will apear where you would expect it. 
-        this.frames.baseBox.top  = this.parent.html.mainCanvasComtainer.scrollTop;
-        this.frames.baseBox.left = this.parent.html.mainCanvasComtainer.scrollLeft;
+        let canvCont = this.parent.html.mainCanvasComtainer;
+        this.frames.baseBox.top  = canvCont.scrollTop  * EditingTools.canvasScale;
+        this.frames.baseBox.left = canvCont.scrollLeft * EditingTools.canvasScale;
 
         // Animation name setting stage
         new Promise((resolve) => {
@@ -220,10 +221,33 @@ class SpriteAnimation{
         temp.frames = frameNum;
 
         if(update){
+            this.roundLastFrames(frameNum);
             (<any>this.stateBasedFrameAdder).temp = null;
         }
 
         RTools.drawFrameBoxes(this.frames);
+    }
+
+    // Prevent pixel jumping
+    roundLastFrames(num){
+        let fd = this.frames.frameDeltas;
+        let fLen =  fd.length;
+        let ind = fLen - num;
+
+        let remainX = 0.0;
+        let remainY = 0.0;
+        
+        for(; ind < fLen; ind++){
+            let remainNewX = remainX + fd[ind].xShift - Math.round(fd[ind].xShift + remainX);
+            let remainNewY = remainY + fd[ind].yShift - Math.round(fd[ind].yShift + remainY);
+
+            fd[ind].xShift = Math.round(fd[ind].xShift + remainX);
+            fd[ind].yShift = Math.round(fd[ind].yShift + remainY);
+            remainX = remainNewX;
+            remainY = remainNewY;
+        }
+
+        console.log(this.frames);
     }
 
 }

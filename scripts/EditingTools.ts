@@ -6,15 +6,44 @@ let html: DomWalker;
 let flags: EditorFlags;
 let curAnimation: SpriteAnimation | null = null;
 
+export let canvasScale = 1.0;
+let scaleHandlerIsSet = false;
+
 /* Call this two before any other functons. */
 export function setProject(project: Project){
     curProject = project;
     html = project.html;
     flags = project.flags;
+
+    if(!scaleHandlerIsSet)
+        setScaleHandler();
 }
 
 export function setAnimation(spriteAnimation: SpriteAnimation){
     curAnimation = spriteAnimation;
+}
+
+
+/* Scale handler */
+function setScaleHandler(){
+    scaleHandlerIsSet = true;
+
+    html.scaleControlInput.oninput = function(evt){
+        let val = (<HTMLInputElement>evt.target).valueAsNumber;
+
+        if(!val || val < 10 || val > 6400)
+            return;
+
+        let scale = (val / 100.0);
+        let oldScale = 1 / canvasScale;
+
+        canvasScale = 1 / scale;
+        html.mainCanvas.style.setProperty("transform","scale(" + scale + ")");
+        // Adjust scroll position 
+        let scrollCont = html.mainCanvasComtainer;
+        scrollCont.scrollTop *= scale / oldScale;
+        scrollCont.scrollLeft *= scale / oldScale;
+    }
 }
 
 
@@ -134,22 +163,27 @@ export function getBaseBoxSizesDialog(frames: Frames): Promise<void>{
         }
     );
 
-    function dragingIdicator(e){
+    function dragingIdicator(evt){
         let canvRect = html.mainCanvas.getBoundingClientRect();
         let frameRect = frames.baseBox;
 
+        let x = evt.clientX;
+        let y = evt.clientY;
+        let spriteX = (x - canvRect.left) * canvasScale;
+        let spriteY = (y - canvRect.top)  * canvasScale;
+
         if(
             // Inside base box
-           (e.x - canvRect.left - 10 >= frameRect.left  &&
-            e.y - canvRect.top - 10 >= frameRect.top  &&
-            e.x - canvRect.left - 10 <= frameRect.left + frameRect.width  &&
-            e.y - canvRect.top - 10 <= frameRect.top + frameRect.height) 
+           (spriteX - 10 >= frameRect.left  &&
+            spriteY - 10 >= frameRect.top  &&
+            spriteX - 10 <= frameRect.left + frameRect.width  &&
+            spriteY - 10 <= frameRect.top + frameRect.height) 
             ||
             // Farther than 4 px from box
-            e.x - canvRect.left - 6 < frameRect.left  ||
-            e.y - canvRect.top - 6 < frameRect.top  ||
-            e.x - canvRect.left - 14 > frameRect.left + frameRect.width  ||
-            e.y - canvRect.top - 14 > frameRect.top + frameRect.height
+            spriteX - 6 < frameRect.left  ||
+            spriteY - 6 < frameRect.top  ||
+            spriteX - 14 > frameRect.left + frameRect.width  ||
+            spriteY - 14 > frameRect.top + frameRect.height
         ){
             html.mainCanvas.style.cursor = "";
             return;
@@ -200,24 +234,31 @@ function getDragingOnMouseDownHandler(frames: Frames){
     let {spriteWidth} = curProject;
     let {spriteHeight} = curProject;
 
-    let func =  (e) => 
+    let func =  (evt) => 
     {
         if(flags.baseBoxDraging || flags.baseBoxResizeDraging)
             return;
     
+        let e = {
+            x : evt.clientX * canvasScale, 
+            y: evt.clientY * canvasScale
+        };
+
 
         let canvRect = html.mainCanvas.getBoundingClientRect();
         let frameRect = frames.baseBox;
+        let spriteX = (evt.clientX - canvRect.left) * canvasScale;
+        let spriteY = (evt.clientY - canvRect.top) * canvasScale;
 
         /* Track where click relative to box */
-        let toLeft  = (e.x - canvRect.left - 10 < frameRect.left);
-        let above   = (e.y - canvRect.top - 10 < frameRect.top);
-        let toRight = (e.x - canvRect.left - 10 > frameRect.left + frameRect.width);
-        let below   = (e.y - canvRect.top - 10 > frameRect.top + frameRect.height);
+        let toLeft  = (spriteX - 10 < frameRect.left);
+        let above   = (spriteY - 10 < frameRect.top);
+        let toRight = (spriteX - 10 > frameRect.left + frameRect.width);
+        let below   = (spriteY - 10 > frameRect.top + frameRect.height);
 
         if( toLeft || above || toRight || below ){
             if(html.mainCanvas.style.cursor == "pointer"){
-                resizeDraging(e, { 
+                resizeDraging(evt, { 
                     left: toLeft,
                     top: above,
                     right: toRight,
@@ -230,12 +271,16 @@ function getDragingOnMouseDownHandler(frames: Frames){
 
         flags.baseBoxDraging = true;
 
-        let lastX = e.clientX;
-        let lastY = e.clientY;
+        let lastX = e.x;
+        let lastY = e.y;
 
 
-        document.onmousemove = (e) => {
-            let {baseBox} = frames
+        document.onmousemove = (evt) => {
+            let e = {
+                x : evt.clientX * canvasScale, 
+                y: evt.clientY * canvasScale
+            };
+            let {baseBox} = frames;
             
             baseBox.left += e.x - lastX;
             baseBox.top += e.y - lastY;
@@ -269,10 +314,14 @@ function getDragingOnMouseDownHandler(frames: Frames){
     {
         flags.baseBoxResizeDraging = true;
 
-        let lastX = evt.clientX;
-        let lastY = evt.clientY;
+        let lastX = evt.clientX * canvasScale;
+        let lastY = evt.clientY * canvasScale;
 
-        document.onmousemove = (e) => {
+        document.onmousemove = (evt) => {
+            let e = {
+                clientX : evt.clientX * canvasScale, 
+                clientY: evt.clientY * canvasScale
+            };
             let box = frames.baseBox;
 
             if(side.top){
@@ -290,11 +339,12 @@ function getDragingOnMouseDownHandler(frames: Frames){
                 box.width += e.clientX - lastX;
             }
 
+
             lastX = e.clientX;
             lastY = e.clientY;
 
-            html.baseBoxDialog.widthInput.value = "" + box.width;
-            html.baseBoxDialog.heightInput.value = "" + box.height;
+            html.baseBoxDialog.widthInput.value = "" + Math.round(box.width);
+            html.baseBoxDialog.heightInput.value = "" + Math.round(box.height);
 
             RTools.drawFrameBoxes(frames);
             RTools.showFrame(frames,0);
@@ -325,10 +375,15 @@ function getBaseBoxIsSetHandler(nextStage: Function, dragingIdicator){
         document.onkeydown = null;
         
         flags.baseBoxEditing = false;
-        flags.editing = false;
         
         html.baseBoxDialog.container.style.display = 'none';
 
+        // Round numbers
+        let box = curAnimation.frames.baseBox;
+        box.top = Math.round(box.top);
+        box.left = Math.round(box.left);
+        box.width = Math.round(box.width);
+        box.height = Math.round(box.height);
 
         setTimeout(() => nextStage() ,4);
     }
@@ -369,7 +424,9 @@ export function getFrameAdderHandler(){
             curAnimation.stateBasedFrameAdder(1,-1,-1,stickToAxis);
 
             document.body.onmousemove = (e: MouseEvent) => {
-                curAnimation.stateBasedFrameAdder(-1,e.clientX,e.clientY,true);
+                let x = e.clientX * canvasScale;
+                let y = e.clientY * canvasScale;
+                curAnimation.stateBasedFrameAdder(-1,x,y,true);
             }
 
             // Finish and clean

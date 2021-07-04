@@ -70,6 +70,7 @@ namespace AnimationPlayer{
             return function(e){
                 playAllFrames = false;
                 showOnlyLast = num;
+                html.animPreviewControls.frameNumInput.valueAsNumber = num;
             }
         }
 

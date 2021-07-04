@@ -77,11 +77,11 @@ namespace RTools{
         ctx.strokeStyle = "#a0ffa0";
         ctx.lineWidth = 2;
 
-        ctx.moveTo(x - 2, y - 2);
-        ctx.lineTo(x + width + 2, y - 2);
-        ctx.lineTo(x + width + 2, y + height + 2);
-        ctx.lineTo(x  - 2, y + height + 2);
-        ctx.lineTo(x - 2, y - 2);
+        ctx.moveTo(x - 1, y - 1);
+        ctx.lineTo(x + width + 1, y - 1);
+        ctx.lineTo(x + width + 1, y + height + 1);
+        ctx.lineTo(x  - 1, y + height + 1);
+        ctx.lineTo(x - 1, y - 1);
         ctx.stroke();
     }
 

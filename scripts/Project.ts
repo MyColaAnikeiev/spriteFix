@@ -28,6 +28,13 @@ type DomWalker = {
             selectedNumber: HTMLElement;
         }
     }
+    animPreviewControls: {
+        frameNumInput: HTMLInputElement;
+        showLast: HTMLElement;
+        showLast2: HTMLElement;
+        showLast3: HTMLElement;
+        showAll: HTMLElement;
+    }   
 };
 
 /* New project is started when user opens Sprite */
@@ -70,26 +77,36 @@ class Project{
     }
 
     grubDomElements(){
+        let query = (str) => document.querySelector(str);
+        let byId =  (str) => document.getElementById(str);
+
         this.html = {
-            mainCanvasComtainer: document.getElementById("source_view_container"),
-            mainCanvas: <HTMLCanvasElement>document.getElementById('source_viewer'),
-            addAnimationBtn : document.getElementById('add-animation-btn'),
-            animListContainer: document.getElementById('anim-list-items'),
+            mainCanvasComtainer: byId("source_view_container"),
+            mainCanvas: <HTMLCanvasElement>byId('source_viewer'),
+            addAnimationBtn : byId('add-animation-btn'),
+            animListContainer: byId('anim-list-items'),
             baseBoxDialog : {
-                container: document.querySelector('.sizes-dialog-back'),
-                widthInput: document.querySelector(".sizes-dialog-back .input-width"),
-                heightInput: document.querySelector(".sizes-dialog-back .input-height"),
-                button: document.querySelector(".sizes-dialog-back button"),
+                container: query('.sizes-dialog-back'),
+                widthInput: query(".sizes-dialog-back .input-width"),
+                heightInput: query(".sizes-dialog-back .input-height"),
+                button: query(".sizes-dialog-back button"),
             },
             frameEditorBlock: {
-                container: document.getElementById('frame-editor-block'),
+                container: byId('frame-editor-block'),
                 frameAdder: {
-                    stage1: document.querySelector("#frame-editor-block .stage1"),
-                    stage2: document.querySelector("#frame-editor-block .stage2"),
-                    container : document.querySelector('#frame-editor-block .frames-adder'),
-                    stickToAxisCheckout: <HTMLInputElement>document.querySelector('#frame-editor-block .frames-adder input'),
-                    selectedNumber: document.querySelector('#frame-editor-block .frames-adder span.selected')
+                    stage1: query("#frame-editor-block .stage1"),
+                    stage2: query("#frame-editor-block .stage2"),
+                    container : query('#frame-editor-block .frames-adder'),
+                    stickToAxisCheckout: <HTMLInputElement>query('#frame-editor-block .frames-adder input'),
+                    selectedNumber: query('#frame-editor-block .frames-adder span.selected')
                 }
+            },
+            animPreviewControls: {
+                frameNumInput: query("#animation-preview-column .frame-num-input input"),
+                showLast : query("#animation-preview-column button.show-last"),
+                showLast2 : query("#animation-preview-column button.show-last2"),
+                showLast3 : query("#animation-preview-column button.show-last3"),
+                showAll : query("#animation-preview-column button.show-all")
             }
         };
     }
@@ -127,6 +144,7 @@ class Project{
             return;
         }
 
+        AnimationPlayer.stop();
         RTools.drawImage();
     }
 

@@ -255,8 +255,9 @@ span.key{
 
     color: #dedddd;
 }
-#animation-preview-column div.preview-controls .num-input span{
-}
+/*#animation-preview-column div.preview-controls .frame-num-input span{
+
+}*/
 #animation-preview-column div.preview-controls input[type=number]{
     box-sizing: border-box;
     width: 100%;

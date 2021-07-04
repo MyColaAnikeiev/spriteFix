@@ -11,13 +11,18 @@ namespace AnimationPlayer{
         frames = anim.frames;
     }
 
+    let handlersIsSetUp = false;
 
     let isRunning = false;
     let intervalId: number;
     let showOnlyLast = 5;
     let currentFrameInd = 0;
+    let playAllFrames = false;
 
     export function start(){
+        if(!handlersIsSetUp)
+            setUpControlHandlers();
+
         if(isRunning)
             stop();
 
@@ -44,10 +49,43 @@ namespace AnimationPlayer{
         RTools.showFrame(frames, currentFrameInd);
 
         currentFrameInd++;
+
         if(currentFrameInd >= framesCount){
+            if(playAllFrames){
+                currentFrameInd = 0;
+                return;
+            }
+
             currentFrameInd = framesCount - showOnlyLast;
             if(currentFrameInd < 0){
                 currentFrameInd = 0;
+            }
+        }
+    }
+
+    function setUpControlHandlers(){
+        handlersIsSetUp = true;
+
+        function btnHandler(num){
+            return function(e){
+                playAllFrames = false;
+                showOnlyLast = num;
+            }
+        }
+
+        html.animPreviewControls.showLast.onclick = btnHandler(1);
+        html.animPreviewControls.showLast2.onclick = btnHandler(2);
+        html.animPreviewControls.showLast3.onclick = btnHandler(3);
+
+        html.animPreviewControls.showAll.onclick = () => playAllFrames = true;
+
+        html.animPreviewControls.frameNumInput.oninput = function(evt: Event){
+            let input: HTMLInputElement = <any>evt.target;
+            let val = input.valueAsNumber;
+            
+            if(val > 0 ){
+                playAllFrames = false;
+                showOnlyLast = val;
             }
         }
     }

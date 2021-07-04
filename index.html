@@ -64,16 +64,17 @@
                         <canvas id="preview-canvas" width="160" height="160"></canvas>
                     </div>
                     <div class="preview-controls">
-                        <div class="num-input">
+                        <div class="frame-num-input">
                             <span>Play last:</span>
                             <br>
                             <input  type="number">
                         </div>
                         <div class="quick-buttons">
-                            <button>Show last</button> <br>
-                            <button>Show last 2</button> <br>
-                            <button>Show last 3</button> <br>
-                            <button>Show all</button>
+                            <p>Frames to show:</p>
+                            <button class="show-last">Last</button>
+                            <button class="show-last2">Last 2</button> 
+                            <button class="show-last3">Last 3</button> 
+                            <button class="show-all">Show all</button>
                         </div>
                     </div>
                 </div>
@@ -92,7 +93,6 @@
                             <br>
                             Then press <span class="key">RightMouse</span>
                             Selected: <span class="key selected">1</span>
-                            <!--<input type="checkbox" checked> stick to axis.-->
                         </div>
                         <div class="checkbox">
                             <input type="checkbox" checked> stick to axis.

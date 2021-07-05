@@ -6,7 +6,7 @@ namespace RTools{
 
     const minCanvasWidth: number = 320;
     const minCanvasHeight : number = 160;
-    const canvasPadding = 10;
+    export const canvasPadding = 10;
 
     let ctx: CanvasRenderingContext2D; 
     let canvas: HTMLCanvasElement;
@@ -87,7 +87,7 @@ namespace RTools{
         ctx.stroke();
     }
 
-    export function drawFrameBoxes(frames: Frames): void{
+    export function drawFrameBoxes(frames: Frames, selected: number = -1): void{
         drawImage();
 
         let base = frames.baseBox;
@@ -96,7 +96,11 @@ namespace RTools{
         let xShift = base.left + canvasPadding;
         let yShift = base.top  + canvasPadding;
 
+        //selected = selected == -1 ? deltas.length - 1 : selected;
+
         for(let i = 0; i < deltas.length; i++){
+            //let last = deltas.length - 1 == i;
+
             let d = deltas[i];
             xShift += d.xShift;
             yShift += d.yShift;
@@ -106,9 +110,14 @@ namespace RTools{
                 drawFrameBox(
                     xShift, yShift,
                     base.width, base.height,
-                    "#005ff050"
+                    selected == i ? "#a05ff050" : "#005ff050"
                 );
-                drawCropedArea(base, d.crop);
+                drawCropedArea(
+                    base, 
+                    {left: xShift, top: yShift},
+                    d.crop,
+                    selected == i ? "#a059f050" : "#005ff050"
+                );
             }
 
             drawFrameBox(
@@ -116,6 +125,7 @@ namespace RTools{
                 yShift + d.crop.top,
                 base.width - (d.crop.left + d.crop.right),
                 base.height - (d.crop.top + d.crop.bottom),
+                selected == i ? "#ff1a5090" : "#a0ffa080"
             );
         }
 
@@ -124,24 +134,29 @@ namespace RTools{
     type BaseBoxT = {top: number,left: number,width: number,height: number};
     type CropT = {top: number, right: number, bottom: number, left: number};
 
-    function drawCropedArea(base: BaseBoxT, crop: CropT){
-        ctx.fillStyle = "#005ff050";
+    function drawCropedArea(
+        base: BaseBoxT, 
+        pos: { left: number; top: number; }, 
+        crop: CropT, 
+        color = "#005ff050")
+    {
+        ctx.fillStyle = color;
         ctx.fillRect(
-            base.left + canvasPadding, 
-            base.top + canvasPadding, 
+            pos.left, 
+            pos.top, 
             base.width, crop.top);
         ctx.fillRect(
-            base.left + canvasPadding , 
-            base.top + canvasPadding + base.height - crop.bottom, 
+            pos.left, 
+            pos.top + base.height - crop.bottom, 
             base.width, crop.bottom);
         ctx.fillRect(
-            base.left + canvasPadding, 
-            base.top + canvasPadding + crop.top, 
+            pos.left, 
+            pos.top + crop.top, 
             crop.left, 
             base.height - crop.top - crop.bottom );
         ctx.fillRect(
-            base.left + canvasPadding + base.width - crop.right, 
-            base.top + canvasPadding + crop.top, 
+            pos.left + base.width - crop.right, 
+            pos.top + crop.top, 
             crop.right, 
             base.height - crop.top - crop.bottom );
     }
@@ -157,8 +172,8 @@ namespace RTools{
         let fWidth = frames.baseBox.width
         let fHeight = frames.baseBox.height;
         // Apply crop
-        fWidth  -= crop.left + crop.right;
-        fHeight -= crop.top  + crop.bottom;
+        let cWidth  = fWidth -  (crop.left + crop.right);
+        let cHeight = fHeight - (crop.top  + crop.bottom);
         let fRatio = fWidth / fHeight;
 
         /* Fill background */
@@ -169,24 +184,33 @@ namespace RTools{
         let bb = frames.baseBox;
         if(pRatio > fRatio){
             let wRatio = fRatio / pRatio;
+            let scale = pHeight / fHeight;
+
             let gap = (1 - wRatio) / 2 * pWidth;
 
             preview_ctx.drawImage(spriteImg,
-                position.left + crop.right,
+                position.left + crop.left,
                 position.top  + crop.top,
-                fWidth, fHeight,
-                gap, 0, pWidth*wRatio, pHeight
+                cWidth, cHeight,
+                gap + crop.left*scale, 
+                crop.top*scale,
+                pWidth*wRatio - (crop.left+crop.right)*scale,
+                pHeight - (crop.top+crop.bottom)*scale
                 );
         }
         else{
             let hRatio = pRatio / fRatio;
             let gap = (1 - hRatio) / 2 * pHeight;
+            let scale = pWidth / fWidth;
 
             preview_ctx.drawImage(spriteImg,
-                position.left + crop.right, 
+                position.left + crop.left, 
                 position.top  + crop.top, 
-                fWidth, fHeight,
-                0, gap, pWidth, pHeight* hRatio
+                cWidth, cHeight,
+                crop.left*scale, 
+                gap + crop.top*scale, 
+                pWidth - (crop.left+crop.right)*scale, 
+                pHeight*hRatio - (crop.top+crop.bottom)*scale
                 );
         }
         
@@ -204,4 +228,4 @@ namespace RTools{
         return { left: x, top: y }
     }
 
-}
+} 

@@ -4,7 +4,9 @@ type EditorFlags = {
     baseBoxResizeDraging: boolean,
     baseBoxDraging: boolean,
     framesMassPosotioning: boolean,
-    frameEditingMode: boolean
+    frameEditingMode: boolean,
+    frameSelected: boolean,
+    cropFrameDrag: boolean
 }
 
 type DomWalker = {
@@ -51,7 +53,9 @@ class Project{
         baseBoxResizeDraging: false,
         baseBoxDraging: false,
         framesMassPosotioning: false,
-        frameEditingMode: false
+        frameEditingMode: false,
+        frameSelected: false,
+        cropFrameDrag: false
     }
 
     html: DomWalker;
@@ -75,6 +79,14 @@ class Project{
 
         EditingTools.setProject(this);
         AnimationPlayer.setProject(this);
+    }
+
+    alowEditing(){
+        // Temporaly work around
+        setTimeout(() => this.flags.editing = false, 150);
+    }
+    prohibitEditing(){
+        this.flags.editing = true;
     }
 
     grubDomElements(){

@@ -26,9 +26,10 @@ type TempFrame = {
     stickToAxis: boolean
 };
 
-type HandlerFunction = (evt: KeyboardEvent) => void;
+
 type FrameEditingModeHandlers = {
-    addFrame : HandlerFunction
+    addFrame : (evt: KeyboardEvent) => void,
+    frameSelectionClick: (evt: MouseEvent) => void
 };
 
 class SpriteAnimation{
@@ -53,7 +54,7 @@ class SpriteAnimation{
         public flags: EditorFlags
     ){        
         // Next Two stages should block any other actions.
-        parent.flags.editing = true;
+        this.parent.prohibitEditing();
 
         EditingTools.setAnimation(this);
         AnimationPlayer.setAnimation(this);
@@ -81,7 +82,8 @@ class SpriteAnimation{
     /* Call after 'EditingTools.setAnimation()' */
     getHendlers(){
         this.handlers = {
-            addFrame: EditingTools.getFrameAdderHandler()
+            addFrame: EditingTools.getFrameAdderHandler(),
+            frameSelectionClick: EditingTools.getFrameSelectionHandler()
         }
     }
 
@@ -97,13 +99,16 @@ class SpriteAnimation{
      *       1) Add frames
      */
     frameEditingMode(){ 
+        const {html} = this.parent;
+
         this.showFrameEditorBlock();
-        this.flags.editing = false;
+        this.parent.alowEditing();
         this.flags.frameEditingMode = true;
 
         AnimationPlayer.start();
 
         document.body.addEventListener("keydown",this.handlers.addFrame);
+        html.mainCanvas.addEventListener("mousedown",this.handlers.frameSelectionClick);
     }  
 
     showFrameEditorBlock(){
@@ -125,9 +130,16 @@ class SpriteAnimation{
 
     /* Clean up when animation deleted */
     selfDestruct(){
+        const {html} = this.parent;
+
         this.flags.frameEditingMode = false;
         document.body.removeEventListener("keydown", this.handlers.addFrame);
+        html.mainCanvas.removeEventListener("click",this.handlers.frameSelectionClick);
+
+        this.handlers.addFrame = null;
+        this.handlers.frameSelectionClick = null;
     }
+
 
 
 
@@ -246,8 +258,6 @@ class SpriteAnimation{
             remainX = remainNewX;
             remainY = remainNewY;
         }
-
-        console.log(this.frames);
     }
 
 }

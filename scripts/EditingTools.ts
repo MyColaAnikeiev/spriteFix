@@ -527,7 +527,6 @@ export function getFrameSelectionHandler(){
             return;
 
         curProject.prohibitEditing();
-        flags.frameSelected = true;
 
         selectedInd = findSelectedFrameIndex(evt);
         selectedFrameIndex = selectedInd;
@@ -539,6 +538,7 @@ export function getFrameSelectionHandler(){
 
         RTools.drawFrameBoxes(curAnimation.frames, selectedInd);
         selectedSetHandlers(selectedInd);
+        flags.frameSelected = true;
     }
 
 }

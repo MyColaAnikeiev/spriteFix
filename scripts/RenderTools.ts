@@ -74,6 +74,8 @@ namespace RTools{
         width = Math.round(width);
         height = Math.round(height);
 
+        ctx.beginPath();
+
         ctx.strokeStyle = color;
         ctx.lineWidth = 2;
 
@@ -99,16 +101,50 @@ namespace RTools{
             xShift += d.xShift;
             yShift += d.yShift;
 
+            if(d.crop.top || d.crop.right || d.crop.bottom || d.crop.left){
+                // Outline
+                drawFrameBox(
+                    xShift, yShift,
+                    base.width, base.height,
+                    "#005ff050"
+                );
+                drawCropedArea(base, d.crop);
+            }
+
             drawFrameBox(
                 xShift + d.crop.left,
                 yShift + d.crop.top,
                 base.width - (d.crop.left + d.crop.right),
-                base.height - (d.crop.top + d.crop.bottom)
+                base.height - (d.crop.top + d.crop.bottom),
             );
         }
 
     }
 
+    type BaseBoxT = {top: number,left: number,width: number,height: number};
+    type CropT = {top: number, right: number, bottom: number, left: number};
+
+    function drawCropedArea(base: BaseBoxT, crop: CropT){
+        ctx.fillStyle = "#005ff050";
+        ctx.fillRect(
+            base.left + canvasPadding, 
+            base.top + canvasPadding, 
+            base.width, crop.top);
+        ctx.fillRect(
+            base.left + canvasPadding , 
+            base.top + canvasPadding + base.height - crop.bottom, 
+            base.width, crop.bottom);
+        ctx.fillRect(
+            base.left + canvasPadding, 
+            base.top + canvasPadding + crop.top, 
+            crop.left, 
+            base.height - crop.top - crop.bottom );
+        ctx.fillRect(
+            base.left + canvasPadding + base.width - crop.right, 
+            base.top + canvasPadding + crop.top, 
+            crop.right, 
+            base.height - crop.top - crop.bottom );
+    }
 
     /* Show frame by index in preview canvas. */
     /* Base box image sample will be resized to fit in preview canvas as a whole.*/

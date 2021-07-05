@@ -68,13 +68,13 @@ namespace RTools{
     }
 
 
-    function drawFrameBox(x,y,width,height): void{
+    function drawFrameBox(x,y,width,height,color="#a0ffa080"): void{
         x = Math.round(x);
         y = Math.round(y);
         width = Math.round(width);
         height = Math.round(height);
 
-        ctx.strokeStyle = "#a0ffa0";
+        ctx.strokeStyle = color;
         ctx.lineWidth = 2;
 
         ctx.moveTo(x - 1, y - 1);
@@ -90,15 +90,6 @@ namespace RTools{
 
         let base = frames.baseBox;
         let deltas = frames.frameDeltas;
-
-        /* Draw first */
-        drawFrameBox(
-            base.left  + canvasPadding, 
-            base.top + canvasPadding,
-            base.width,
-            base.height 
-        );
-        
 
         let xShift = base.left + canvasPadding;
         let yShift = base.top  + canvasPadding;

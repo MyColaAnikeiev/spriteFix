@@ -134,7 +134,7 @@ class SpriteAnimation{
 
         this.flags.frameEditingMode = false;
         document.body.removeEventListener("keydown", this.handlers.addFrame);
-        html.mainCanvas.removeEventListener("click",this.handlers.frameSelectionClick);
+        html.mainCanvas.removeEventListener("mousedown",this.handlers.frameSelectionClick);
 
         this.handlers.addFrame = null;
         this.handlers.frameSelectionClick = null;

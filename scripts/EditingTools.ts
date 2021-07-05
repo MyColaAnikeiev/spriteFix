@@ -191,10 +191,10 @@ export function getBaseBoxSizesDialog(frames: Frames): Promise<void>{
 
         if(
             // Inside base box
-           (cords.x >= frameRect.left  &&
-            cords.y - 10 >= frameRect.top  &&
-            cords.x <= frameRect.left + frameRect.width  &&
-            cords.y - 10 <= frameRect.top + frameRect.height) 
+           (cords.x  >= frameRect.left  &&
+            cords.y  >= frameRect.top  &&
+            cords.x  <= frameRect.left + frameRect.width  &&
+            cords.y  <= frameRect.top + frameRect.height) 
             ||
             // Farther than 4 px from box
             cords.x + 4 < frameRect.left  ||

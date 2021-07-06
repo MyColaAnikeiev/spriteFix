@@ -112,9 +112,12 @@ export function addAnimationListElement(nextStage: Function){
         if(e.target == input)
             return;
 
-        nameField.innerHTML = input.value ? input.value : 'Animation';
+        let animationName = input.value ? input.value : 'Animation';
+        nameField.innerHTML = animationName;
         input.style.display = 'none';
         nameField.style.display = 'block';
+
+        curAnimation.frames.animationName = animationName;
         
         /* End name editing */
         document.body.onclick = null;
@@ -124,7 +127,6 @@ export function addAnimationListElement(nextStage: Function){
     }
 
 
-    //  Enclosure
     const currentAnimation = curAnimation;
 
     /* Selection animation event */

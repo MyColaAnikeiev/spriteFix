@@ -1,4 +1,5 @@
 type Frames = {
+    animationName: string,
     baseBox :{
         top: number;
         left: number;
@@ -35,6 +36,7 @@ type FrameEditingModeHandlers = {
 class SpriteAnimation{
 
     frames: Frames = {
+        animationName: '',
         baseBox: {
             top: 0,
             left: 0,
@@ -47,18 +49,27 @@ class SpriteAnimation{
         }]
     }
 
+    flags: EditorFlags;
+
     handlers: FrameEditingModeHandlers;
 
     constructor(
         public parent: Project, 
-        public flags: EditorFlags
-    ){        
+        public isLoaded: boolean = false
+    ){      
+
         // Next Two stages should block any other actions.
-        this.parent.prohibitEditing();
+        isLoaded || this.parent.prohibitEditing();
+
+        this.flags = this.parent.flags;
 
         EditingTools.setAnimation(this);
         AnimationPlayer.setAnimation(this);
         this.getHendlers();
+
+        if(isLoaded){
+            return;
+        }
 
         // Adjust base box start position to scrollPosition so it
         // will apear where you would expect it. 

@@ -146,12 +146,91 @@ class Project{
                 return;
 
             setTimeout(() => {
-                let anim = new SpriteAnimation(this, this.flags);
+                let anim = new SpriteAnimation(this);
                 this.selectedAnimation = anim;
             }, 4);
         }
 
-        this.html.dragMenu.exportSprite.onclick = () => this.exportSprite();        
+        this.html.dragMenu.exportSprite.onclick = () => this.exportSprite();
+        
+        this.html.dragMenu.saveJson.onclick = () => {
+            let aniArr = Array.from(this.animations.keys()).map(a => a.frames);
+            let jsonBlob = new Blob([JSON.stringify(aniArr)], {type: "text/json"});
+            let link = document.createElement("a");
+
+            link.download = "sprite-fix.json";
+            link.href = URL.createObjectURL(jsonBlob);
+            link.click()
+            URL.revokeObjectURL(link.href);
+        }
+
+        this.html.dragMenu.openJson.onclick = () => {
+            let input = document.createElement("input");
+            input.type = "file";
+            input.style.display = 'none';
+            document.body.appendChild(input);
+
+            let project = this;
+
+            input.onchange = function(e){
+                let file = (<any>e.target).files[0];
+                if(!file)
+                    return;
+
+                if(file.type == "application/json"){
+                    file.text().then(
+                        data => {
+                            let anims = JSON.parse(data);
+                            anims.forEach(a => { 
+                                project.addAnimationFromJson(a); 
+                            });
+                        }
+                    );
+                }
+                
+                document.body.removeChild(input);
+            }
+
+            input.click();
+        }
+
+    }
+
+    addAnimationFromJson(anim){
+        let newAnim = new SpriteAnimation(this, true);
+        let {flags, html} = this;
+
+        newAnim.frames = anim;
+        
+        /* HTML elements generation */
+        let el = document.createElement('div');
+        el.className = 'anim-list-item';
+        el.innerHTML = `
+            <div class="anim-name">${anim.animationName}</div>
+            <div class="closer">Delete</div>
+        `;
+        html.animListContainer.appendChild(el);
+        let delBtn = <HTMLElement>el.querySelector(".closer");
+
+        /* Selection animation event */
+        el.onclick = (e: any) =>{
+            if(flags.editing)
+                return;
+            // Don't listen to close button dude
+            if(e.target == delBtn)
+                return;
+
+                newAnim.selectAsCurrent();
+        }
+
+        /* Removing animation event */
+        delBtn.onclick = () =>{
+            if(flags.editing)
+                return;
+            
+            html.animListContainer.removeChild(el);
+            curProject.removeAnimation(newAnim);
+        }
 
     }
 
@@ -235,7 +314,7 @@ class Project{
 
                 curX += base.width + 1;
                 let lastOne = ind + 1 == fd.length;
-                if(curX >= sizes.width || lastOne){
+                if((curX + base.width + 1) > sizes.width || lastOne){
                     curX = 0;
                     curY += base.height + 1;
                 }
@@ -291,22 +370,23 @@ class Project{
         while(true){
             let curHeight = this.getSpriteSheetHeight(curWidth);
             let area = curWidth * curHeight;
-            let ratio = curWidth / height;
+            let ratio = curWidth / curHeight;
 
             if(smalestArea === undefined){
                 smalestArea = area;
             }
-            else if(smalestArea > area || ratio < minRatio){
+            if(smalestArea > area || width/height < minRatio){
                 width = curWidth;
                 height = curHeight;
                 smalestArea = area;
             }
 
-            let step = this.calcSpriteWidthStep(curWidth);
-            if(!step)
+            if(ratio > maxRatio)
                 break;
 
-            if((curWidth + step)/curHeight > maxRatio)
+            let step = this.calcSpriteWidthStep(curWidth);
+            
+            if(!step)
                 break;
 
             curWidth += step;
@@ -330,7 +410,7 @@ class Project{
                 return;
             
             let step = (fited+1)*(box.width+1) - curWidth;
-            if(step)
+            if(step > 0)
                 steps.push(step);
         });
         
@@ -352,7 +432,8 @@ class Project{
             let numOfFrames = frames.frameDeltas.length;
 
             let inRow = Math.floor(width / (box.width+1));
-            let rows = Math.floor(numOfFrames / inRow) + numOfFrames % inRow;
+            let lastRow = numOfFrames % inRow ? 1 : 0;
+            let rows = Math.floor(numOfFrames / inRow) + lastRow;
             height += rows * (box.height + 1);
         });
 

@@ -691,6 +691,7 @@ function getSelectedFrameKeyHandler(ind: number){
         switch(evt.key){
             case "Enter":
             case "Escape":
+            case "a":
                 selectedFrameStateExit();
                 break;
             case "Delete":

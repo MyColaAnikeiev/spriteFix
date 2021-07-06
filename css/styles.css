@@ -316,6 +316,7 @@ span.key{
 #frame-editor-block > div {
     display: flex;
     padding: 1px;
+    text-align: left;
 }
 #frame-editor-block > div > div{
     flex-shrink: 0.0;
@@ -323,6 +324,8 @@ span.key{
     flex-basis: 200px;
     margin: 3px 4px;
     min-height: 75px;
+    padding-bottom: 5px;
+    padding-left: 5px;
 
     color: rgb(96, 106, 127);
     background-color: #fff;
@@ -351,6 +354,38 @@ span.key{
 #frame-editor-block  .frames-adder .checkbox{
     max-width: 160px;
     margin: 0 auto;
+}
+#frame-editor-block hr{
+    margin: 2px 4px 6px 2px;
+    color: #ede8e863;
+}
+
+.arrow-keys{
+    position: relative;
+    display: inline-block;
+    height: 54px;
+    width: 80px;
+    vertical-align: bottom;
+}
+.arrow-keys .up{
+    position: absolute;
+    top: 0;
+    left: 27px;
+}
+.arrow-keys .down{
+    position: absolute;
+    bottom: 0;
+    left: 27px;
+}
+.arrow-keys .left{
+    position: absolute;
+    left: 0;
+    bottom: 0;
+}
+.arrow-keys .right{
+    position: absolute;
+    bottom: 0;
+    right: 0;
 }
 
 #anim-managment-block{

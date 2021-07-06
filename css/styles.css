@@ -88,6 +88,29 @@ span.key{
     flex-shrink: 0.0;
 }
 
+/* Canvas exporter */
+.exported-image-container{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: rgba(200,200,200,0.82);
+    padding: 50px 20px 20px 20px;
+
+    z-index: 2000;
+}
+.exported-image-container p {
+    color: #434040;
+    font-family: Times;
+}
+.exported-image-container div{
+    text-align: center;
+}
+.exported-image-container canvas{
+    border: #1d2623 1px solid;
+}
+
 
 /* Drop Menu */
 #drop-menu{

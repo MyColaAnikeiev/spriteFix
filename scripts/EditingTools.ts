@@ -574,12 +574,9 @@ function selectedFrameRemoveHandlers(){
 
 function getSelectedFrameDragStart(ind: number){
     return function(evt: MouseEvent){
-        console.log(curAnimation.frames);
-        console.log("Before")
         if(html.mainCanvas.style.cursor != "pointer")
             return false;
 
-        console.log("after");
 
         flags.cropFrameDrag = true;
 
@@ -640,7 +637,6 @@ function getSelectedFrameDragStart(ind: number){
                 endDrag
             );
             flags.cropFrameDrag = false;
-            console.log(curAnimation.frames.frameDeltas[ind]);
         }
         document.addEventListener("mouseup", 
             endDrag);
@@ -703,10 +699,12 @@ function getSelectedFrameKeyHandler(ind: number){
                 if(evt.key.search("Arrow") == 0){
                     selectedFrameMove(ind, evt.key);
                     evt.preventDefault();
+                    RTools.drawFrameBoxes(curAnimation.frames,ind);
+                    return;
                 }
         }
 
-        RTools.drawFrameBoxes(curAnimation.frames, ind);
+        RTools.drawFrameBoxes(curAnimation.frames);
     }
 }
 

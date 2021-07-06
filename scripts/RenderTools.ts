@@ -228,4 +228,21 @@ namespace RTools{
         return { left: x, top: y }
     }
 
+    export function fromFrameImageToSheet(
+        ctx: CanvasRenderingContext2D,
+        base: { x: number; y: number; width: number; height: number; },
+        crop: { top: number; right: number; bottom: number; left: number; }, 
+        targetPos: { x: number; y: number; })
+    {
+        ctx.drawImage(spriteImg,
+            base.x + crop.left,
+            base.y + crop.top,
+            base.width - crop.left - crop.right,
+            base.height -crop.top - crop.bottom,
+            targetPos.x + crop.left,
+            targetPos.y + crop.top,
+            base.width - crop.left - crop.right,
+            base.height -crop.top - crop.bottom
+        );
+    }
 } 

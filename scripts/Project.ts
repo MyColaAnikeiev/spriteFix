@@ -212,6 +212,8 @@ class Project{
         html.animListContainer.appendChild(el);
         let delBtn = <HTMLElement>el.querySelector(".closer");
 
+        this.animations.set(newAnim,el);
+
         /* Selection animation event */
         el.onclick = (e: any) =>{
             if(flags.editing)

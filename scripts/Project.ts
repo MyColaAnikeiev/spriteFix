@@ -235,7 +235,7 @@ class Project{
 
                 curX += base.width + 1;
                 let lastOne = ind + 1 == fd.length;
-                if(curX > sizes.width || lastOne){
+                if(curX >= sizes.width || lastOne){
                     curX = 0;
                     curY += base.height + 1;
                 }
@@ -305,7 +305,8 @@ class Project{
             let step = this.calcSpriteWidthStep(curWidth);
             if(!step)
                 break;
-            if(ratio > maxRatio)
+
+            if((curWidth + step)/curHeight > maxRatio)
                 break;
 
             curWidth += step;

@@ -1,5 +1,5 @@
 # spriteFix
-A little web based tool, for maping given sprite sheet to animation frames, so you could then extract JSON file with frame coordinates or generate new fixed sprite sheet. There are some sprite sheets on Internet, actualy a lot of them, where you can't just shift source coordinates by some constant value, and have animation. And there probably is some solutions on Web, but because this is just my learning project, i writen it anyway.
+You can play with it [here](https://mycolaanikeiev.github.io/). A little web based tool, for maping given sprite sheet to animation frames, so you could then extract JSON file with frame coordinates or generate new fixed sprite sheet. There are some sprite sheets on Internet, actualy a lot of them, where you can't just shift source coordinates by some constant value, and have animation. And there probably is some solutions on Web, but because this is just my learning project, i writen it anyway.
 
 [![Preview](https://github.com/MyColaAnikeiev/spriteFix/blob/main/img/preview.jpg)](https://github.com/MyColaAnikeiev/spriteFix/blob/main/img/preview.jpg)
 

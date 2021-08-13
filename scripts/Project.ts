@@ -87,9 +87,15 @@ class Project{
     }
 
     alowEditing(){
-        // Temporaly work around
-        setTimeout(() => this.flags.editing = false, 150);
+
+        setTimeout(() => {
+            setTimeout(() => {
+                this.flags.editing = false
+            },0)
+        }, 0);
+
     }
+
     prohibitEditing(){
         this.flags.editing = true;
     }

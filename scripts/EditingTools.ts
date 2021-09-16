@@ -654,7 +654,7 @@ function getMiddlePointSelectionHandler(){
     }
 }
 
-function getSelectedFrameDragStart(ind: number){
+function getSelectedFrameDragStart(frameIndex: number){
     return function(evt: MouseEvent){
         if(html.mainCanvas.style.cursor != "pointer")
             return false;
@@ -666,47 +666,30 @@ function getSelectedFrameDragStart(ind: number){
         let lastY = evt.clientY * canvasScale;
         let side = selectedFramelastHoveredSide;
 
+
         selectedFrameHandlers.cropDrag = (evt: MouseEvent) =>{
-            let {crop} = curAnimation.frames.frameDeltas[ind];
+            let {crop} = curAnimation.frames.frameDeltas[frameIndex];
             let {baseBox} = curAnimation.frames;
             let x = evt.clientX * canvasScale;
             let y = evt.clientY * canvasScale;
 
             if(side.left){
-                crop.left += x - lastX;
-                // Restrain out
-                crop.left = crop.left < 0 ? 0 : crop.left;
-                // Restrain min size 4
-                if(crop.left+crop.right>= baseBox.width)
-                    crop.left = baseBox.width - crop.right -4;
+                updateFramesBorders('left', x - lastX, frameIndex);
             }
             if(side.up){
-                crop.top += y - lastY;
-                crop.top = crop.top < 0 ? 0 : crop.top;
-
-                if(crop.top+crop.bottom>= baseBox.height)
-                    crop.top = baseBox.height - crop.bottom - 4;
+                updateFramesBorders('up', y - lastY, frameIndex);
             }
             if(side.right){
-                crop.right -= x - lastX;
-                crop.right = crop.right < 0 ? 0 : crop.right;
-
-                if(crop.left+crop.right>= baseBox.width)
-                    crop.left = baseBox.width - crop.left -4;
+                updateFramesBorders('right', x - lastX, frameIndex);
             }
             if(side.bottom){
-                crop.bottom -= y - lastY;
-                crop.bottom = crop.bottom < 0 ? 0 : crop.bottom;
-
-                if(crop.top+crop.bottom>= baseBox.height)
-                    crop.bottom = baseBox.height - crop.top - 4;
+                updateFramesBorders('down', y - lastY, frameIndex);
             }
             
-
             lastX = x; 
             lastY = y;
 
-            RTools.drawFrameBoxes(curAnimation.frames, ind);
+            RTools.drawFrameBoxes(curAnimation.frames, frameIndex);
         }
 
         document.addEventListener("mousemove", 
@@ -728,6 +711,158 @@ function getSelectedFrameDragStart(ind: number){
     }
 }
 
+// Extending baseBox and update crop values if needed. 
+// Also if shrinking, then it also shrinks baseBox if posible.
+function updateFramesBorders(side: string,diff: number, curInd: number){
+    const {frames} = curAnimation;
+    const {baseBox} = frames;
+    const {frameDeltas: fd} = frames;
+
+    if(side == 'left'){
+        // Streching
+        if(diff < 0){
+            baseBox.left += diff;
+            baseBox.middlePoint.x -= diff;
+            baseBox.width -= diff;
+            for(let i = 0; i < fd.length; i++){
+                if(i == curInd){
+                    continue;
+                }
+
+                fd[i].crop.left -= diff;
+            }
+        }
+        else{ //Shrinking
+            const {crop} = fd[curInd];
+            crop.left += diff;
+            if(crop.left + crop.right + 4 >= baseBox.width){
+                crop.left = baseBox.width - crop.right - 4;
+            }
+        }
+            
+        const unusedLeftCrop = fd.reduce((last, f) => {
+            return last < f.crop.left ? last : f.crop.left;
+        }, NaN);
+
+        if(unusedLeftCrop){
+            baseBox.left += unusedLeftCrop;
+            baseBox.middlePoint.x -= unusedLeftCrop;
+            baseBox.width -= unusedLeftCrop;
+
+            fd.forEach(f => {
+                f.crop.left -= unusedLeftCrop;
+            })
+        }
+    
+    }
+
+    if(side == 'right'){
+        // Streching
+        if(diff >= 0){
+            baseBox.width += diff;
+            for(let i = 0; i < fd.length; i++){
+                if(i == curInd){
+                    continue;
+                }
+
+                fd[i].crop.right += diff;
+            }
+        }
+        else{ //Shrinking
+            const {crop} = fd[curInd];
+            crop.right -= diff;
+            if(crop.right + crop.left + 4 >= baseBox.width){
+                crop.right = baseBox.width - crop.left - 4;
+            }
+        }
+            
+        const unusedRightCrop = fd.reduce((last, f) => {
+            return last < f.crop.right ? last : f.crop.right;
+        }, NaN);
+
+        if(unusedRightCrop){
+            baseBox.width -= unusedRightCrop;
+
+            fd.forEach(f => {
+                f.crop.right -= unusedRightCrop;
+            })
+        }
+    
+    }
+
+    if(side == 'up'){
+        // Streching
+        if(diff < 0){
+            baseBox.top += diff;
+            baseBox.height -= diff;
+            baseBox.middlePoint.y -= diff;
+
+            for(let i = 0; i < fd.length; i++){
+                if(i == curInd){
+                    continue;
+                }
+
+                fd[i].crop.top -= diff;
+            }
+        }
+        else{ //Shrinking
+            const { crop } = fd[curInd];
+            crop.top += diff;
+            if(crop.top+crop.bottom+4 >= baseBox.height){
+                crop.top = baseBox.height - crop.bottom -4;
+            }
+        }
+            
+        const unusedUpCrop = fd.reduce((last, f) => {
+            return last < f.crop.top ? last : f.crop.top;
+        }, NaN);
+
+        if(unusedUpCrop){
+            baseBox.top += unusedUpCrop;
+            baseBox.middlePoint.y -= unusedUpCrop;
+            baseBox.height -= unusedUpCrop;
+
+            fd.forEach(f => {
+                f.crop.top -= unusedUpCrop;
+            })
+        }
+    
+    }
+
+    if(side == 'down'){
+        // Streching
+        if(diff >= 0){
+            baseBox.height += diff;
+            for(let i = 0; i < fd.length; i++){
+                if(i == curInd){
+                    continue;
+                }
+
+                fd[i].crop.bottom += diff;
+            }
+        }
+        else{ //Shrinking
+            const {crop } = fd[curInd];
+            crop.bottom -= diff;
+            if(crop.top+crop.bottom+4 >= baseBox.height){
+                crop.bottom = baseBox.height - crop.top - 4;
+            }
+        }
+            
+        const unusedBottomCrop = fd.reduce((last, f) => {
+            return last < f.crop.bottom ? last : f.crop.bottom;
+        }, NaN);
+
+        if(unusedBottomCrop){
+            baseBox.height -= unusedBottomCrop;
+
+            fd.forEach(f => {
+                f.crop.bottom -= unusedBottomCrop;
+            })
+        }
+    
+    }
+}
 
 function getSelectedFrameIndicatorHandler(ind){
     return function(evt){

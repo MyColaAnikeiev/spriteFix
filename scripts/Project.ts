@@ -6,6 +6,7 @@ type EditorFlags = {
     framesMassPosotioning: boolean,
     frameEditingMode: boolean,
     frameSelected: boolean,
+    frameMiddlePointSelection: boolean
     cropFrameDrag: boolean
 }
 
@@ -61,6 +62,7 @@ class Project{
         framesMassPosotioning: false,
         frameEditingMode: false,
         frameSelected: false,
+        frameMiddlePointSelection: false,
         cropFrameDrag: false
     }
 

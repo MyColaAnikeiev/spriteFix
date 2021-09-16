@@ -5,6 +5,10 @@ type Frames = {
         left: number;
         width: number;
         height: number;
+        middlePoint: null | {
+            x: number,
+            y: number
+        }
     },
 
     frameDeltas: Array<{
@@ -41,7 +45,8 @@ class SpriteAnimation{
             top: 0,
             left: 0,
             width: 32,
-            height: 32
+            height: 32,
+            middlePoint: null
         },
         frameDeltas: [{
             xShift: 0, yShift: 0,

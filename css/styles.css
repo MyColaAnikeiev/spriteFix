@@ -329,6 +329,9 @@ span.key{
     padding: 1px;
     text-align: left;
 }
+#editor-tips-block > div > div.hide * {
+    display: none;
+}
 #editor-tips-block > div > div{
     flex-shrink: 0.0;
     flex-grow: 1.0;
@@ -369,6 +372,10 @@ span.key{
 #editor-tips-block hr{
     margin: 2px 4px 6px 2px;
     color: #ede8e863;
+}
+#editor-tips-block .middle-point-tip{
+    margin-top: 5px;
+    margin-bottom: 10px;
 }
 
 .arrow-keys{

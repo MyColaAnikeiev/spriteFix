@@ -87,6 +87,19 @@ namespace RTools{
         ctx.stroke();
     }
 
+    function drawMiddlePoint(x,y, midPoint){
+        x += midPoint.x;
+        y += midPoint.y;
+
+        ctx.beginPath();
+        ctx.strokeStyle = "#60ff3074";
+        ctx.moveTo(x -5, y);
+        ctx.lineTo(x+5,y);    
+        ctx.moveTo(x, y-5);
+        ctx.lineTo(x,y+5);
+        ctx.stroke();
+    }
+
     export function drawFrameBoxes(frames: Frames, selected: number = -1): void{
         drawImage();
 
@@ -127,6 +140,9 @@ namespace RTools{
                 base.height - (d.crop.top + d.crop.bottom),
                 selected == i ? "#ff1a5090" : "#a0ffa080"
             );
+            if(base.middlePoint){
+                drawMiddlePoint(xShift, yShift, base.middlePoint)
+            }
         }
 
     }

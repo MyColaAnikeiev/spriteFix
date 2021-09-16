@@ -11,8 +11,9 @@ namespace AnimationPlayer{
     let currentFrameInd = 0;
     let playUntillSelected = false;
     let selectedFrameId = null;
-    let timeInterval = 300;
     let playAllFrames = false;
+    let timeInterval = 300;
+    
 
     function log(...a) {console.log(...a)}
 
@@ -158,6 +159,43 @@ namespace AnimationPlayer{
             stop();
             start();
         }
+
+        
+        // Time interval controls handler
+        function timeIntervalHandler(direction){
+            const coef = 1.2;
+            let step = 50;
+
+            let nextInterval = direction == 'up' ? timeInterval*coef : timeInterval/coef;
+
+            if(direction == 'up' &&  timeInterval > 2500){
+                return
+            }
+
+            step = [50,25,10,5].find((step) => {
+                if(direction == 'down'){
+                    return timeInterval-nextInterval > step;
+                }else{
+                    return nextInterval-timeInterval > step;
+                }
+            })
+
+            //debugger;
+
+            if(step === undefined){
+                return;
+            }
+
+
+            nextInterval = Math.round(nextInterval / step) * step;
+            timeInterval = nextInterval == timeInterval ? timeInterval + 5 : nextInterval;
+            html.animPreviewControls.intervalDisplay.innerHTML = String(timeInterval);
+        }
+
+        html.animPreviewControls.intervalDecrBtn.onclick = 
+            timeIntervalHandler.bind(null,'down');
+        html.animPreviewControls.intervalIncrBtn.onclick = 
+            timeIntervalHandler.bind(null,'up');
     }
 
 }

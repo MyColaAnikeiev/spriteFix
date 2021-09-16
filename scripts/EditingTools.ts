@@ -518,27 +518,30 @@ export function getFrameSelectionHandler(){
                 return;
             }
 
+
+            // Selecter different frame
             selectedFrameIndex = selectedInd;
             selectedFrameRemoveHandlers();
             selectedSetHandlers(selectedInd);
             RTools.drawFrameBoxes(curAnimation.frames, selectedInd);
+            AnimationPlayer.selectedFrameSet(selectedInd);
             return;
         }
 
-        if(flags.editing)
+        if(flags.editing){
             return;
-
-        curProject.prohibitEditing();
+        }
 
         selectedInd = findSelectedFrameIndex(evt);
         selectedFrameIndex = selectedInd;
-
         if(selectedInd == -1){
-            curProject.alowEditing();
             return;
         }
 
+        curProject.prohibitEditing();
+
         RTools.drawFrameBoxes(curAnimation.frames, selectedInd);
+        AnimationPlayer.selectedFrameSet(selectedInd);
         selectedSetHandlers(selectedInd);
         flags.frameSelected = true;
     }
@@ -548,6 +551,7 @@ export function getFrameSelectionHandler(){
 function selectedFrameStateExit(){
     selectedFrameRemoveHandlers();
     flags.frameSelected = false;
+    AnimationPlayer.selectedFrameUnset();
     curProject.alowEditing();
 }
 function selectedSetHandlers(selectedInd: number){

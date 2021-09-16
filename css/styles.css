@@ -303,6 +303,17 @@ span.key{
     color: #2e2804;
 } 
 
+#animation-preview-column div.preview-controls .quick-buttons p{
+    margin: 10px 0 0 0;
+}
+
+#animation-preview-column div.preview-controls .untill-selected{
+    margin-top: 5px;
+}
+#animation-preview-column div.preview-controls .untill-selected span{
+    font-size: 12px;
+    
+}
 
 /* Frame editor row */
 #frame-editor-block{

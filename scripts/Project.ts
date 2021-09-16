@@ -41,6 +41,7 @@ type DomWalker = {
         showLast2: HTMLElement;
         showLast3: HTMLElement;
         showAll: HTMLElement;
+        untillSelectedCheckbox: HTMLInputElement;
     },
     scaleControlInput: HTMLInputElement;
 };
@@ -135,7 +136,8 @@ class Project{
                 showLast : query("#animation-preview-column button.show-last"),
                 showLast2 : query("#animation-preview-column button.show-last2"),
                 showLast3 : query("#animation-preview-column button.show-last3"),
-                showAll : query("#animation-preview-column button.show-all")
+                showAll : query("#animation-preview-column button.show-all"),
+                untillSelectedCheckbox: query("#animation-preview-column .untill-selected input")
             },
             scaleControlInput: query("#animation-preview-column .scale-control input")
         };

@@ -9,7 +9,7 @@ let preview_canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementBy
 let preview_context : CanvasRenderingContext2D = preview_canvas.getContext('2d');
 
 let canvas_width : number = canvas_container.clientWidth - 2; // 2 padding
-let canvas_height: number = 360;
+let canvas_height: number = 430;
 
 source_canvas.setAttribute("width",String(canvas_width));
 source_canvas.setAttribute("height",String(canvas_height));

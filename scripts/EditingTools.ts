@@ -24,6 +24,19 @@ export function setAnimation(spriteAnimation: SpriteAnimation){
 }
 
 
+/* Tips controll */
+function showControlTips(selector){
+    document.querySelectorAll(selector).forEach(elm => {
+        elm.classList.remove("hide");
+    })
+}
+function hideControlTips(selector){
+    document.querySelectorAll(selector).forEach(elm => {
+        elm.classList.add("hide");
+    })
+}
+
+
 /* Scale handler */
 function setScaleHandler(){
     scaleHandlerIsSet = true;
@@ -407,13 +420,13 @@ function getBaseBoxIsSetHandler(nextStage: Function, dragingIdicator){
 /********************************************************************************
  *  Frame addition handler
  */
-function frameEditorBlockSetStage(num: number){
+function editorTipsBlockSetStage(num: number){
     if(num == 1){
-        html.frameEditorBlock.frameAdder.stage1.classList.remove("hide");
-        html.frameEditorBlock.frameAdder.stage2.classList.add("hide");
+        html.editorTipsBlock.frameAdder.stage1.classList.remove("hide");
+        html.editorTipsBlock.frameAdder.stage2.classList.add("hide");
     }else{
-        html.frameEditorBlock.frameAdder.stage1.classList.add("hide");
-        html.frameEditorBlock.frameAdder.stage2.classList.remove("hide");
+        html.editorTipsBlock.frameAdder.stage1.classList.add("hide");
+        html.editorTipsBlock.frameAdder.stage2.classList.remove("hide");
     }
 }
 
@@ -430,9 +443,9 @@ export function getFrameAdderHandler(){
             flags.framesMassPosotioning = true;
 
             // Bottom panel 
-            frameEditorBlockSetStage(2);
+            editorTipsBlockSetStage(2);
 
-            let stickToAxis = html.frameEditorBlock.frameAdder.stickToAxisCheckout.checked;
+            let stickToAxis = html.editorTipsBlock.frameAdder.stickToAxisCheckout.checked;
             curAnimation.stateBasedFrameAdder(1,-1,-1,stickToAxis);
 
             document.body.onmousemove = (e: MouseEvent) => {
@@ -463,7 +476,7 @@ export function getFrameAdderHandler(){
         function cleanUp(){
             document.body.onmousemove = null;
             document.body.onmousedown = null;
-            frameEditorBlockSetStage(1);
+            editorTipsBlockSetStage(1);
             flags.framesMassPosotioning = false;
             curProject.alowEditing();
         }
@@ -543,6 +556,7 @@ export function getFrameSelectionHandler(){
         RTools.drawFrameBoxes(curAnimation.frames, selectedInd);
         AnimationPlayer.selectedFrameSet(selectedInd);
         selectedSetHandlers(selectedInd);
+        showControlTips(".selected-tips");
         flags.frameSelected = true;
     }
 
@@ -551,6 +565,7 @@ export function getFrameSelectionHandler(){
 function selectedFrameStateExit(){
     selectedFrameRemoveHandlers();
     flags.frameSelected = false;
+    hideControlTips(".selected-tips");
     AnimationPlayer.selectedFrameUnset();
     curProject.alowEditing();
 }

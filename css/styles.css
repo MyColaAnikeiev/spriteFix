@@ -316,7 +316,7 @@ span.key{
 }
 
 /* Frame editor row */
-#frame-editor-block{
+#editor-tips-block{
     padding: 5px;
     margin-top: 10px;
     flex-basis: 1120px;
@@ -324,12 +324,12 @@ span.key{
     background-image: linear-gradient(rgb(120, 119, 119),rgba(6, 67, 121, 0.15));
     border-radius: 3px;
 }
-#frame-editor-block > div {
+#editor-tips-block > div {
     display: flex;
     padding: 1px;
     text-align: left;
 }
-#frame-editor-block > div > div{
+#editor-tips-block > div > div{
     flex-shrink: 0.0;
     flex-grow: 1.0;
     flex-basis: 200px;
@@ -344,29 +344,29 @@ span.key{
     border-bottom-right-radius: 10px;
     box-shadow: #f2f2f2 -3px -4px 3px;
 }
-#frame-editor-block > div p{
+#editor-tips-block > div p{
     max-width: 100px;
     margin: 2px auto;
 }
-#frame-editor-block  .frames-adder{
+#editor-tips-block  .frames-adder{
     display: flex;
     flex-wrap: wrap;
 }
-#frame-editor-block  .frames-adder .stage1{
+#editor-tips-block  .frames-adder .stage1{
     flex:0.0 0.0 100%;
     align-self: center;
 }
-#frame-editor-block  .frames-adder .stage2{
+#editor-tips-block  .frames-adder .stage2{
     max-width: 270px;
     margin: 0 auto;
     text-align: center;
     line-height: 26px;
 }
-#frame-editor-block  .frames-adder .checkbox{
+#editor-tips-block  .frames-adder .checkbox{
     max-width: 160px;
     margin: 0 auto;
 }
-#frame-editor-block hr{
+#editor-tips-block hr{
     margin: 2px 4px 6px 2px;
     color: #ede8e863;
 }

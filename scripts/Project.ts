@@ -25,7 +25,7 @@ type DomWalker = {
         heightInput: HTMLInputElement;
         button: HTMLElement;
     };
-    frameEditorBlock: {
+    editorTipsBlock: {
         container: HTMLElement;
         frameAdder: {
             stage1: HTMLElement;
@@ -121,14 +121,14 @@ class Project{
                 heightInput: query(".sizes-dialog-back .input-height"),
                 button: query(".sizes-dialog-back button"),
             },
-            frameEditorBlock: {
-                container: byId('frame-editor-block'),
+            editorTipsBlock: {
+                container: byId('editor-tips-block'),
                 frameAdder: {
-                    stage1: query("#frame-editor-block .stage1"),
-                    stage2: query("#frame-editor-block .stage2"),
-                    container : query('#frame-editor-block .frames-adder'),
-                    stickToAxisCheckout: <HTMLInputElement>query('#frame-editor-block .frames-adder input'),
-                    selectedNumber: query('#frame-editor-block .frames-adder span.selected')
+                    stage1: query("#editor-tips-block .stage1"),
+                    stage2: query("#editor-tips-block .stage2"),
+                    container : query('#editor-tips-block .frames-adder'),
+                    stickToAxisCheckout: <HTMLInputElement>query('#editor-tips-block .frames-adder input'),
+                    selectedNumber: query('#editor-tips-block .frames-adder span.selected')
                 }
             },
             animPreviewControls: {

@@ -271,15 +271,28 @@ span.key{
 }
 #animation-preview-column .scale-control{
     max-width: 150px;
-    margin: 0 auto;
+    margin: 0 auto 5px auto;
 
     color: #dbdbdb;
 }
 #animation-preview-column .scale-control input{
     max-width: 60px;
-    background-color: #585858;
-    color:#c4d6ce;
+    background-color: black;
+    color: #c4d6ce;
+    border: #5c5b5b 1px solid;
+    padding: 1px 0px 1px 5px;
 }
+#animation-preview-column .scale-control input:focus-visible{
+    outline: none;
+}
+#animation-preview-column .scale-control input:focus{
+    color: rgb(195, 226, 111);
+}
+#animation-preview-column .scale-control .label{
+    font-size: 14px;
+    color: rgb(179, 179, 179);
+}
+
 #animation-preview-column div.canvas-container{
     max-width: 160px;
     margin: 0 auto;
@@ -293,26 +306,90 @@ span.key{
 
     color: #dedddd;
 }
-/*#animation-preview-column div.preview-controls .frame-num-input span{
-
-}*/
-#animation-preview-column div.preview-controls input[type=number]{
+#animation-preview-column div.preview-controls .frame-num-input .label{
+    font-size: 13px;
+    color: #a09e99;
+}
+#animation-preview-column div.preview-controls .frame-num-input input[type=number]{
     box-sizing: border-box;
     width: 100%;
-    background-color: #9a9a9a;
-    color: #2e2804;
+    background-color: black;
+    color: #c4d6ce;
+    border: #5c5b5b 1px solid;
+    padding: 1px 0px 1px 5px;
 } 
+#animation-preview-column div.preview-controls .frame-num-input input[type=number]:focus-visible{
+    outline: none;
+}
+#animation-preview-column div.preview-controls .frame-num-input input[type=number]:focus{
+    color: rgb(195, 226, 111);
+}
+
 
 #animation-preview-column div.preview-controls .quick-buttons p{
     margin: 10px 0 0 0;
+    font-size: 13px;
+    color: #a09e99;
+}
+#animation-preview-column div.preview-controls .quick-buttons button{
+    border: #2f2828 1px solid;
+    background-color: #040404;
+    color: #aba6a6;
+    border-radius: 4px;
+    padding: 3px 5px;
+}
+#animation-preview-column div.preview-controls .quick-buttons button:hover{
+    background-color: #252525;
+}
+#animation-preview-column div.preview-controls .quick-buttons button:active{
+    background-color: #777676;;
 }
 
 #animation-preview-column div.preview-controls .untill-selected{
+    background-color: black;
+    padding: 1px 5px;
     margin-top: 5px;
+    border-radius: 2px;
 }
 #animation-preview-column div.preview-controls .untill-selected span{
     font-size: 12px;
     
+}
+
+#animation-preview-column .speed-controls{
+    margin-top: 8px;
+    background-color: #262724;
+}
+#animation-preview-column .speed-controls .label{
+    font-size: 12px;
+}
+#animation-preview-column .speed-controls .row{
+    display: flex;
+}
+
+#animation-preview-column .speed-controls .row > * {
+    flex: 1 0 auto;
+    margin: 2px;
+    padding: 3px 2px;
+    text-align: center;
+    background-color: #161414;
+    border-radius: 3px;
+    font-size: 16px;
+}
+#animation-preview-column .speed-controls .display{
+    background-color: black;
+}
+#animation-preview-column .speed-controls .up,
+#animation-preview-column .speed-controls .down{
+    cursor: pointer;
+}
+#animation-preview-column .speed-controls .up:hover,
+#animation-preview-column .speed-controls .down:hover{
+    background-color: rgb(31, 30, 30);
+}
+#animation-preview-column .speed-controls .up:active,
+#animation-preview-column .speed-controls .down:active{
+    background-color: rgb(107, 107, 107);
 }
 
 /* Frame editor row */

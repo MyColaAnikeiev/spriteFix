@@ -64,14 +64,14 @@
 
                 <div id="animation-preview-column">
                     <div class="scale-control">
-                        <input type="number" step="10" min="10" max="6400" value="100"><label>% scale</label>
+                        <input type="number" step="10" min="10" max="6400" value="100"><span class="label">% scale</span>
                     </div>
                     <div class="canvas-container">
                         <canvas id="preview-canvas" width="160" height="160"></canvas>
                     </div>
                     <div class="preview-controls">
                         <div class="frame-num-input">
-                            <span>Play last:</span>
+                            <span class="label">Play last:</span>
                             <br>
                             <input  type="number">
                         </div>
@@ -85,6 +85,14 @@
                         <div class="untill-selected">
                             <span>Play untill selected:</span>
                             <input type="checkbox">
+                        </div>
+                        <div class="speed-controls">
+                            <span class="label">Interval between frames.</span>
+                            <div class="row">
+                                <div class="display">300</div>
+                                <div class="down">&darr;</div>
+                                <div class="up">&uarr;</div>
+                            </div>
                         </div>
                     </div>
                 </div>
